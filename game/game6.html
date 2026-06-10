@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Install 6 - Mixed Review Scrimmage</title>
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <main class="game-shell">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">043</div>
+        <div>
+          <div class="pill">INSTALL 6</div>
+          <h2>Mixed Review Scrimmage</h2>
+        </div>
+      </div>
+      <div class="top-actions">
+        <a class="button-link" href="../index.html">← Hub</a>
+        <button class="danger" id="resetBtn" type="button">Reset</button>
+      </div>
+    </div>
+
+    <section id="nameScreen" class="name-screen">
+      <div class="name-card">
+        <div class="badge">THE 043 PLAYBOOK</div>
+        <h1 style="font-size:52px">Game 6</h1>
+        <p class="lead">Mixed review from all installs. Recognize the formation and make the call.</p>
+        <label for="studentName">Player Name</label>
+        <input id="studentName" placeholder="Enter name" autocomplete="name" />
+        <button class="primary" id="startBtn" type="button" style="margin-top:18px;width:100%">Start Scrimmage</button>
+      </div>
+    </section>
+
+    <section id="gamePanel" class="game-panel hidden">
+      <div class="score-row">
+        <div class="score-box"><span>PLAYER</span><strong id="playerOut">—</strong></div>
+        <div class="score-box"><span>QUESTION</span><strong id="qNum">1/50</strong></div>
+        <div class="score-box"><span>SCORE</span><strong id="scoreOut">0</strong></div>
+        <div class="score-box"><span>ATTEMPTS</span><strong id="attemptsOut">0</strong></div>
+        <div class="score-box"><span>TIME</span><strong id="timeOut">0:00</strong></div>
+      </div>
+
+      <div class="question-card">
+        <div class="domain" id="domainOut">DOMAIN</div>
+        <div class="question" id="questionOut">Question text</div>
+        <div class="answers" id="answersOut"></div>
+        <div class="feedback" id="feedbackOut">Choose the best answer. Correct-answer explanation stays for 5 seconds before the next rep.</div>
+      </div>
+    </section>
+
+    <section id="summaryPanel" class="summary-panel hidden">
+      <div class="badge">SCRIMMAGE COMPLETE</div>
+      <h1 style="font-size:54px">Game Film</h1>
+      <div class="summary-grid">
+        <div class="mini"><span>Score</span><h2 id="finalScore">—</h2></div>
+        <div class="mini"><span>Accuracy</span><h2 id="finalAccuracy">—</h2></div>
+        <div class="mini"><span>Attempts</span><h2 id="finalAttempts">—</h2></div>
+        <div class="mini"><span>Time</span><h2 id="finalTime">—</h2></div>
+      </div>
+      <button class="primary" id="playAgainBtn" type="button">Run It Back</button>
+      <h2 style="margin-top:26px">Missed / Repped Concepts</h2>
+      <div id="missedList" class="missed-list"></div>
+    </section>
+  </main>
+
+<script>
+const SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+const EXPLANATION_DELAY_MS = 5000;
+
+const BANK = [
+  {domain:"Rules - FERPA",question:"A parent asks to inspect educational records. Which law is most directly connected?",answers:["FERPA","LRE","FBA","BIP"],correct:"FERPA",explanation:"Records and privacy point to FERPA."},
+  {domain:"Rules - LRE",question:"A student should learn with nondisabled peers to the maximum extent appropriate. Which principle is this?",answers:["LRE","FERPA","Progress monitoring","Transition"],correct:"LRE",explanation:"LRE means least restrictive environment."},
+  {domain:"Rules - 504",question:"A student does not qualify for an IEP but needs access supports because of a disability. What plan may apply?",answers:["Section 504 plan","BIP only","ETR only","Report card"],correct:"Section 504 plan",explanation:"504 provides access and nondiscrimination supports."},
+  {domain:"Rules - IDEA",question:"Which law is most connected to IEPs, FAPE, eligibility, and procedural safeguards?",answers:["IDEA","FERPA","Copyright law","Athletic code"],correct:"IDEA",explanation:"IDEA is the special education law."},
+  {domain:"Rules - FAPE",question:"Eligible students with disabilities are entitled to a free appropriate public education. This is called:",answers:["FAPE","FBA","AAC","UDL"],correct:"FAPE",explanation:"FAPE means free appropriate public education."},
+
+  {domain:"Student Clues - SLD",question:"A student has average ability but major difficulty with decoding and spelling. Which category is most likely?",answers:["Specific learning disability","Orthopedic impairment","Visual impairment","Deaf-blindness"],correct:"Specific learning disability",explanation:"Average ability plus academic skill weakness often points to SLD."},
+  {domain:"Student Clues - ASD",question:"A student struggles with social communication, restricted interests, and schedule changes. Which category is most likely?",answers:["Autism spectrum disorder","Speech sound disorder only","Orthopedic impairment","Hearing impairment"],correct:"Autism spectrum disorder",explanation:"Social communication differences and need for routine are ASD clues."},
+  {domain:"Student Clues - OHI",question:"A student with ADHD has limited alertness and attention that affects school performance. Which category may apply?",answers:["Other health impairment","Visual impairment","Deaf-blindness","Orthopedic impairment only"],correct:"Other health impairment",explanation:"ADHD may qualify under OHI when it affects educational performance."},
+  {domain:"Student Clues - ID",question:"A student has significant limitations in intellectual functioning and adaptive behavior. Which category is most likely?",answers:["Intellectual disability","Specific learning disability","Speech impairment only","Hearing impairment only"],correct:"Intellectual disability",explanation:"ID involves intellectual functioning and adaptive behavior limitations."},
+  {domain:"Student Clues - ED",question:"Long-term anxiety, poor relationships, and emotional responses interfere with learning. Which area may be suspected?",answers:["Emotional disturbance","Visual impairment","Orthopedic impairment","Speech sound issue only"],correct:"Emotional disturbance",explanation:"Ongoing emotional/behavioral characteristics affecting learning may suggest ED."},
+
+  {domain:"First Move - Referral",question:"A teacher says a student is struggling and wants an IEP immediately. What should happen first?",answers:["Review data and follow referral steps","Write goals today","Change placement now","Stop interventions"],correct:"Review data and follow referral steps",explanation:"Eligibility and evaluation come before an IEP."},
+  {domain:"First Move - Progress",question:"A student is not making progress toward an IEP goal. What should be reviewed first?",answers:["Progress data","Locker number","Lunch menu","Class decorations"],correct:"Progress data",explanation:"Progress data tells whether instruction or supports need adjustment."},
+  {domain:"First Move - Parent Concern",question:"A parent says an IEP accommodation is not being provided. What should be checked first?",answers:["IEP and implementation","Class rank","Sports eligibility","Bus route"],correct:"IEP and implementation",explanation:"If it is in the IEP, verify the requirement and whether it is being implemented."},
+  {domain:"First Move - Confidentiality",question:"A staff member who does not teach a student asks to see disability information. What should happen first?",answers:["Check educational need","Share the file","Post the plan","Ask classmates"],correct:"Check educational need",explanation:"Share confidential information only with legitimate educational interest."},
+  {domain:"First Move - AAC",question:"A student using an AAC device takes extra time to answer. What should the teacher do first?",answers:["Provide wait time","Answer for him","Skip him","Require speech only"],correct:"Provide wait time",explanation:"AAC is communication. Provide time and include the student."},
+
+  {domain:"Behavior - Function",question:"A student refuses work every time writing starts. What should the team look for?",answers:["Function of the behavior","A new grade level","A harsher rule","A new locker"],correct:"Function of the behavior",explanation:"Repeated behavior patterns should be understood by function."},
+  {domain:"Behavior - FBA",question:"A team wants to know why a student throws materials during math. What should they conduct?",answers:["Functional Behavior Assessment","Final exam","Vision screening only","Attendance audit"],correct:"Functional Behavior Assessment",explanation:"An FBA identifies why a behavior is occurring."},
+  {domain:"Behavior - BIP",question:"After an FBA identifies why a behavior happens, what plan is developed?",answers:["Behavior Intervention Plan","Report card","Seating chart only","Lunch plan"],correct:"Behavior Intervention Plan",explanation:"A BIP uses FBA results to teach and support replacement behavior."},
+  {domain:"Behavior - Replacement",question:"A student yells when work is too hard. Which replacement behavior should be taught?",answers:["Ask for help or a break","Rip the paper quietly","Leave without permission","Wait to be removed"],correct:"Ask for help or a break",explanation:"Replacement behavior should meet the same need appropriately."},
+  {domain:"Behavior - Safety",question:"A student begins throwing chairs near classmates. What is the first priority?",answers:["Safety","Finishing the worksheet","Taking attendance","Giving a quiz"],correct:"Safety",explanation:"When there is danger, safety comes first."},
+
+  {domain:"IEP - ETR",question:"Which document summarizes evaluation data and eligibility decisions in Ohio?",answers:["ETR","IEP only","Lesson plan","Grade book"],correct:"ETR",explanation:"The ETR summarizes evaluation results and eligibility."},
+  {domain:"IEP - Plan",question:"Which document lists goals, services, accommodations, and placement?",answers:["IEP","ETR only","Attendance sheet","Report card"],correct:"IEP",explanation:"The IEP is the service and goal plan."},
+  {domain:"IEP - Present Levels",question:"What section describes the student's current academic and functional performance?",answers:["Present levels","Lunch schedule","Bus route","Class rank"],correct:"Present levels",explanation:"Present levels describe where the student is now."},
+  {domain:"IEP - Goals",question:"Which goal is measurable?",answers:["The student will solve two-step equations with 80% accuracy","The student will improve math","The student will try harder","The student will like school"],correct:"The student will solve two-step equations with 80% accuracy",explanation:"Measurable goals include a clear skill and success criterion."},
+  {domain:"IEP - Review",question:"An IEP should be reviewed at least:",answers:["Annually","Every ten years","Only after graduation","Only once"],correct:"Annually",explanation:"IEPs are reviewed at least once each year."},
+
+  {domain:"Access - Accommodation",question:"Extended time on the same grade-level assessment is a:",answers:["Accommodation","Modification","Placement change","Disability category"],correct:"Accommodation",explanation:"Accommodations change access, not expectations."},
+  {domain:"Access - Modification",question:"A student is assigned a simplified curriculum with different expectations. This is a:",answers:["Modification","Accommodation","FERPA request","Universal screening"],correct:"Modification",explanation:"Modifications change what the student is expected to learn or show."},
+  {domain:"Access - AT",question:"Technology that helps a student communicate or access learning may be listed as:",answers:["Assistive technology","A punishment","A grade change","A transition warning"],correct:"Assistive technology",explanation:"AT supports access, communication, writing, reading, or independence."},
+  {domain:"Access - Visual Supports",question:"A student with autism struggles when the schedule changes. Which support helps?",answers:["Visual schedule","Surprise changes","Public correction","No warning"],correct:"Visual schedule",explanation:"Visual schedules and warnings support transitions and predictability."},
+  {domain:"Access - Writing",question:"A student has good ideas but cannot organize a paragraph. Which support helps first?",answers:["Graphic organizer","Longer essay","No writing","Lower all standards"],correct:"Graphic organizer",explanation:"Graphic organizers support writing organization."},
+
+  {domain:"Instruction - Decoding",question:"A student cannot sound out unfamiliar words. What instruction should be targeted?",answers:["Phonics and decoding","Essay writing","Locker organization","Peer discussion only"],correct:"Phonics and decoding",explanation:"Difficulty sounding out words points to decoding and phonics."},
+  {domain:"Instruction - Comprehension",question:"A student reads words correctly but cannot explain the meaning. What should be targeted?",answers:["Comprehension strategies","Letter formation only","Gross motor skills","Attendance"],correct:"Comprehension strategies",explanation:"Accurate reading with poor understanding points to comprehension."},
+  {domain:"Instruction - Working Memory",question:"A student forgets multi-step directions. Which support is best?",answers:["Chunk directions","Give longer directions","Remove all support","Punish forgetting"],correct:"Chunk directions",explanation:"Chunking reduces memory load."},
+  {domain:"Instruction - UDL",question:"A teacher provides audio, visuals, text, and hands-on options for the same concept. This reflects:",answers:["Universal Design for Learning","Suspension policy","Due process only","Retention"],correct:"Universal Design for Learning",explanation:"UDL offers multiple ways to access and show learning."},
+  {domain:"Instruction - Least Prompt",question:"A student succeeds with a brief visual cue. What prompt should be used?",answers:["Least intrusive support","Full assistance every time","No feedback","Removal from task"],correct:"Least intrusive support",explanation:"Use the support that helps while building independence."},
+
+  {domain:"Professional Practice - Collaboration",question:"A general education teacher says an accommodation is inconvenient. What should happen first?",answers:["Review IEP responsibility","Remove the accommodation","Ignore the teacher","Ask student to waive it"],correct:"Review IEP responsibility",explanation:"If it is in the IEP, it must be implemented."},
+  {domain:"Professional Practice - Parent Rights",question:"A parent disagrees with evaluation results. What should the school explain?",answers:["Procedural safeguards","Lunch policy","Dress code","Bus rules"],correct:"Procedural safeguards",explanation:"Procedural safeguards explain parent rights under IDEA."},
+  {domain:"Professional Practice - PWN",question:"When a school proposes or refuses a major special education action, parents receive:",answers:["Prior written notice","A lunch pass","A hall pass","A seating chart"],correct:"Prior written notice",explanation:"Prior written notice explains proposed or refused special education actions."},
+  {domain:"Professional Practice - Team",question:"IEPs are developed by:",answers:["The IEP team","Only one teacher","Only the student","Only the principal"],correct:"The IEP team",explanation:"IEP development requires a team, including parent participation."},
+  {domain:"Professional Practice - Services",question:"Speech therapy or OT may appear in an IEP as:",answers:["Related services","State standards","Report card comments","Classroom rules"],correct:"Related services",explanation:"Related services help the student benefit from special education."},
+
+  {domain:"Transition - Planning",question:"An older student is unsure about work or training after graduation. What should the IEP address?",answers:["Transition planning","Lunch seating","Locker cleanout","Field day"],correct:"Transition planning",explanation:"Transition planning connects school to post-school goals."},
+  {domain:"Transition - Interests",question:"Transition planning should begin by considering the student's:",answers:["Strengths and interests","Favorite hallway","Bus number","Locker color"],correct:"Strengths and interests",explanation:"Transition planning is based on strengths, preferences, interests, and needs."},
+  {domain:"Self-Advocacy",question:"A student does not know how to ask for approved help. What should be taught?",answers:["Self-advocacy skills","Avoidance","Dependency","Test answers"],correct:"Self-advocacy skills",explanation:"Students need to learn how and when to use supports appropriately."},
+  {domain:"Adaptive Behavior",question:"A student struggles with daily routines and independence across settings. This describes:",answers:["Adaptive behavior","Phonemic awareness","Articulation only","Visual acuity"],correct:"Adaptive behavior",explanation:"Adaptive behavior includes daily living and independence skills."},
+  {domain:"Placement",question:"Placement decisions should be based on:",answers:["IEP needs","Convenience","Disability label only","Classroom decorations"],correct:"IEP needs",explanation:"Placement is based on the student's needs and services in the IEP."},
+
+  {domain:"Behavior - Reinforcement",question:"A student earns points for completing work and trades them for computer time. This is:",answers:["Token reinforcement","Due process","Reevaluation","A modification"],correct:"Token reinforcement",explanation:"Tokens or points can reinforce desired behavior."},
+  {domain:"Behavior - Antecedent",question:"A student argues after every unannounced quiz. The quiz is likely the:",answers:["Antecedent","Replacement behavior","Reinforcer","IEP goal"],correct:"Antecedent",explanation:"The antecedent is what happens before the behavior."},
+  {domain:"Behavior - Escape",question:"A student puts his head down whenever difficult math appears. The likely function is:",answers:["Escape from work","Peer leadership","Access to food","Visual impairment"],correct:"Escape from work",explanation:"Avoiding difficult work often points to escape function."},
+  {domain:"Behavior - Attention",question:"A student jokes during quiet work and smiles when peers laugh. The likely function is:",answers:["Peer attention","Reading access","Fine motor need","Hearing access"],correct:"Peer attention",explanation:"Peer laughter may reinforce the behavior."},
+  {domain:"Behavior - De-escalation",question:"A student is upset but no one is in danger. What is the best first response?",answers:["Calm redirect","Argue publicly","Call police","Crowd the desk"],correct:"Calm redirect",explanation:"Use a calm, least intrusive response when there is no immediate danger."}
+];
+
+let player="", order=[], currentIndex=0, score=0, attempts=0, startTime=null, timerId=null, locked=false, missed=[], currentQuestion=null;
+const $ = id => document.getElementById(id);
+
+function shuffle(arr){
+  const copy=[...arr];
+  for(let i=copy.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+  return copy;
+}
+
+function formatTime(ms){
+  const total=Math.floor(ms/1000);
+  const min=Math.floor(total/60);
+  const sec=total%60;
+  return `${min}:${String(sec).padStart(2,"0")}`;
+}
+
+function startTimer(){
+  startTime=Date.now();
+  timerId=setInterval(()=>{$("timeOut").textContent=formatTime(Date.now()-startTime);},500);
+}
+
+function startGame(){
+  const name=$("studentName").value.trim();
+  if(!name){$("studentName").focus();return;}
+  player=name;
+  order=shuffle(BANK);
+  currentIndex=0;
+  score=0;
+  attempts=0;
+  missed=[];
+  locked=false;
+  $("playerOut").textContent=player;
+  $("nameScreen").classList.add("hidden");
+  $("summaryPanel").classList.add("hidden");
+  $("gamePanel").classList.remove("hidden");
+  clearInterval(timerId);
+  startTimer();
+  renderQuestion();
+}
+
+function renderQuestion(){
+  locked=false;
+  currentQuestion=order[currentIndex];
+  $("qNum").textContent=`${currentIndex+1}/${order.length}`;
+  $("scoreOut").textContent=score;
+  $("attemptsOut").textContent=attempts;
+  $("domainOut").textContent=currentQuestion.domain;
+  $("questionOut").textContent=currentQuestion.question;
+  $("feedbackOut").innerHTML="Mixed review: identify the clue, then make the call.";
+  $("answersOut").innerHTML="";
+  shuffle(currentQuestion.answers).forEach(ans=>{
+    const btn=document.createElement("button");
+    btn.className="answer-btn";
+    btn.type="button";
+    btn.textContent=ans;
+    btn.addEventListener("click",()=>chooseAnswer(btn,ans));
+    $("answersOut").appendChild(btn);
+  });
+}
+
+function chooseAnswer(btn,ans){
+  if(locked)return;
+  attempts++;
+  $("attemptsOut").textContent=attempts;
+
+  if(ans===currentQuestion.correct){
+    locked=true;
+    score++;
+    $("scoreOut").textContent=score;
+    btn.classList.add("correct");
+    $("feedbackOut").innerHTML=`<strong>Correct.</strong><br>${currentQuestion.explanation}<br><br><em>Next rep in 5 seconds...</em>`;
+    document.querySelectorAll(".answer-btn").forEach(b=>b.disabled=true);
+    setTimeout(nextQuestion,EXPLANATION_DELAY_MS);
+  }else{
+    btn.classList.add("wrong");
+    btn.disabled=true;
+    missed.push({
+      question:currentQuestion.question,
+      selected:ans,
+      correct:currentQuestion.correct,
+      explanation:currentQuestion.explanation,
+      domain:currentQuestion.domain
+    });
+    $("feedbackOut").innerHTML="<strong>Not quite.</strong><br>Try again. Look for the keyword or clue in the question.";
+  }
+}
+
+function nextQuestion(){
+  currentIndex++;
+  if(currentIndex>=order.length){endGame();}
+  else{renderQuestion();}
+}
+
+function endGame(){
+  clearInterval(timerId);
+  const elapsed=Date.now()-startTime;
+  const accuracy=attempts?Math.round((score/attempts)*100):0;
+  $("gamePanel").classList.add("hidden");
+  $("summaryPanel").classList.remove("hidden");
+  $("finalScore").textContent=`${score}/${order.length}`;
+  $("finalAccuracy").textContent=`${accuracy}%`;
+  $("finalAttempts").textContent=attempts;
+  $("finalTime").textContent=formatTime(elapsed);
+
+  $("missedList").innerHTML=missed.length
+    ? missed.map(m=>`<div class="missed-item"><strong>${m.domain}</strong><br>${m.question}<br><strong>Correct call:</strong> ${m.correct}<br><em>${m.explanation}</em></div>`).join("")
+    : `<div class="missed-item"><strong>Clean scrimmage.</strong><br>No missed reps recorded.</div>`;
+
+  logResult({
+    game:"Install 6 - Mixed Review Scrimmage",
+    player,
+    score,
+    total:order.length,
+    attempts,
+    accuracy,
+    elapsedSeconds:Math.round(elapsed/1000),
+    missedCount:missed.length,
+    timestamp:new Date().toISOString()
+  });
+}
+
+function logResult(payload){
+  if(!SCRIPT_URL || SCRIPT_URL.includes("PASTE_YOUR")){
+    console.warn("Apps Script URL not set.",payload);
+    return;
+  }
+  fetch(SCRIPT_URL,{
+    method:"POST",
+    mode:"no-cors",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(payload)
+  }).catch(err=>console.warn("Logging failed",err));
+}
+
+function resetGame(){
+  clearInterval(timerId);
+  $("gamePanel").classList.add("hidden");
+  $("summaryPanel").classList.add("hidden");
+  $("nameScreen").classList.remove("hidden");
+  $("studentName").focus();
+}
+
+$("startBtn").addEventListener("click",startGame);
+$("studentName").addEventListener("keydown",e=>{if(e.key==="Enter")startGame();});
+$("resetBtn").addEventListener("click",resetGame);
+$("playAgainBtn").addEventListener("click",startGame);
+</script>
+</body>
+</html>
