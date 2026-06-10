@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Install 4 - Behavior Response</title>
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <main class="game-shell">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">043</div>
+        <div>
+          <div class="pill">INSTALL 4</div>
+          <h2>Behavior Response</h2>
+        </div>
+      </div>
+      <div class="top-actions">
+        <a class="button-link" href="../index.html">← Hub</a>
+        <button class="danger" id="resetBtn" type="button">Reset</button>
+      </div>
+    </div>
+
+    <section id="nameScreen" class="name-screen">
+      <div class="name-card">
+        <div class="badge">THE 043 PLAYBOOK</div>
+        <h1 style="font-size:52px">Game 4</h1>
+        <p class="lead">Read the behavior. Find the function. Choose the support that teaches, prevents, or de-escalates.</p>
+        <label for="studentName">Player Name</label>
+        <input id="studentName" placeholder="Enter name" autocomplete="name" />
+        <button class="primary" id="startBtn" type="button" style="margin-top:18px;width:100%">Start Install</button>
+      </div>
+    </section>
+
+    <section id="gamePanel" class="game-panel hidden">
+      <div class="score-row">
+        <div class="score-box"><span>PLAYER</span><strong id="playerOut">—</strong></div>
+        <div class="score-box"><span>QUESTION</span><strong id="qNum">1/25</strong></div>
+        <div class="score-box"><span>SCORE</span><strong id="scoreOut">0</strong></div>
+        <div class="score-box"><span>ATTEMPTS</span><strong id="attemptsOut">0</strong></div>
+        <div class="score-box"><span>TIME</span><strong id="timeOut">0:00</strong></div>
+      </div>
+
+      <div class="question-card">
+        <div class="domain" id="domainOut">DOMAIN</div>
+        <div class="question" id="questionOut">Question text</div>
+        <div class="answers" id="answersOut"></div>
+        <div class="feedback" id="feedbackOut">Choose the best behavior response. Correct-answer explanation stays for 5 seconds before the next rep.</div>
+      </div>
+    </section>
+
+    <section id="summaryPanel" class="summary-panel hidden">
+      <div class="badge">INSTALL COMPLETE</div>
+      <h1 style="font-size:54px">Game Film</h1>
+      <div class="summary-grid">
+        <div class="mini"><span>Score</span><h2 id="finalScore">—</h2></div>
+        <div class="mini"><span>Accuracy</span><h2 id="finalAccuracy">—</h2></div>
+        <div class="mini"><span>Attempts</span><h2 id="finalAttempts">—</h2></div>
+        <div class="mini"><span>Time</span><h2 id="finalTime">—</h2></div>
+      </div>
+      <button class="primary" id="playAgainBtn" type="button">Run It Back</button>
+      <h2 style="margin-top:26px">Missed / Repped Concepts</h2>
+      <div id="missedList" class="missed-list"></div>
+    </section>
+  </main>
+
+<script>
+const SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+const EXPLANATION_DELAY_MS = 5000;
+
+const BANK = [
+  {
+    domain:"Domain III - Behavior Basics",
+    question:"A student refuses work every time independent writing begins. What should the teacher look for first?",
+    answers:["The function of the behavior","A harsher punishment","A new disability label","A final grade"],
+    correct:"The function of the behavior",
+    explanation:"Repeated behavior during the same task suggests a pattern. First ask what the behavior is helping the student get or avoid."
+  },
+  {
+    domain:"Domain III - FBA",
+    question:"A team wants to understand why a student throws materials during math. What should they conduct?",
+    answers:["Functional Behavior Assessment","Final exam review","Hearing screening only","Annual grade audit"],
+    correct:"Functional Behavior Assessment",
+    explanation:"An FBA identifies the function of behavior, such as escape, attention, access to something, or sensory need."
+  },
+  {
+    domain:"Domain III - BIP",
+    question:"After an FBA shows that a student disrupts class to avoid difficult reading, what plan should be developed?",
+    answers:["Behavior Intervention Plan","Graduation plan","Attendance report","Locker schedule"],
+    correct:"Behavior Intervention Plan",
+    explanation:"A BIP uses FBA information to prevent the behavior, teach a replacement behavior, and reinforce appropriate behavior."
+  },
+  {
+    domain:"Domain III - Replacement Behavior",
+    question:"A student yells when work is too hard. Which replacement behavior would be most appropriate to teach?",
+    answers:["Ask for help or a break","Leave the room without permission","Wait to be removed","Rip the paper quietly"],
+    correct:"Ask for help or a break",
+    explanation:"Replacement behavior should meet the same need in an appropriate way. Asking for help or a break can replace yelling."
+  },
+  {
+    domain:"Domain III - Prevention",
+    question:"A student often melts down when the daily schedule changes unexpectedly. Which support is best?",
+    answers:["Advance warning and visual schedule","Random changes for practice","Public correction","Loss of lunch"],
+    correct:"Advance warning and visual schedule",
+    explanation:"Prevention matters. Predictability, visual schedules, and transition warnings reduce behavior before it starts."
+  },
+  {
+    domain:"Domain III - De-escalation",
+    question:"A student is upset, speaking loudly, and refusing to begin work, but no one is in danger. What is the best response?",
+    answers:["Use a calm, brief redirect","Argue until he complies","Call police immediately","Crowd around the desk"],
+    correct:"Use a calm, brief redirect",
+    explanation:"When there is no immediate danger, use a calm, least intrusive response. Arguing usually escalates the situation."
+  },
+  {
+    domain:"Domain III - Reinforcement",
+    question:"A student stays on task longer when praised immediately after beginning work. What strategy is being used?",
+    answers:["Positive reinforcement","Punishment","Extinction only","Seclusion"],
+    correct:"Positive reinforcement",
+    explanation:"Positive reinforcement increases a desired behavior by adding something helpful or motivating after the behavior."
+  },
+  {
+    domain:"Domain III - Behavior Data",
+    question:"A teacher says a behavior happens 'all the time.' What should the intervention specialist do first?",
+    answers:["Collect specific behavior data","Assume the student is lazy","Change placement immediately","Stop documenting"],
+    correct:"Collect specific behavior data",
+    explanation:"Behavior decisions should be based on data: frequency, duration, setting, triggers, and what happens after."
+  },
+  {
+    domain:"Domain III - Antecedent",
+    question:"A student argues after every unannounced quiz. In behavior terms, the unannounced quiz is likely the:",
+    answers:["Antecedent","Consequence","Replacement behavior","Reinforcer"],
+    correct:"Antecedent",
+    explanation:"The antecedent is what happens before the behavior. Here, the quiz comes before the arguing."
+  },
+  {
+    domain:"Domain III - Consequence",
+    question:"A student disrupts class and is sent to the hallway, which lets him avoid the assignment. The hallway removal may be acting as:",
+    answers:["A consequence that reinforces escape","A visual support","A transition warning","A reading accommodation"],
+    correct:"A consequence that reinforces escape",
+    explanation:"If removal helps the student avoid work, it may accidentally reinforce the behavior."
+  },
+  {
+    domain:"Domain III - Escape Function",
+    question:"A student puts his head down whenever difficult math problems are assigned. The likely function may be:",
+    answers:["Escape from difficult work","Access to food","Peer leadership","Visual impairment"],
+    correct:"Escape from difficult work",
+    explanation:"The clue is that the behavior happens when difficult work appears. That often points to escape or avoidance."
+  },
+  {
+    domain:"Domain III - Attention Function",
+    question:"A student makes jokes during quiet work and smiles when classmates laugh. The likely function may be:",
+    answers:["Peer attention","Avoiding vision tasks","Fine motor fatigue","Hearing access"],
+    correct:"Peer attention",
+    explanation:"If the behavior is followed by laughter or attention, attention may be reinforcing it."
+  },
+  {
+    domain:"Domain III - Sensory Need",
+    question:"A student rocks, taps, and seeks movement during long seated tasks. Which support may help?",
+    answers:["Planned movement breaks","Longer seated work","Public correction","No sensory tools"],
+    correct:"Planned movement breaks",
+    explanation:"Movement needs can often be supported with planned breaks, seating options, or sensory tools."
+  },
+  {
+    domain:"Domain III - Behavior Goals",
+    question:"Which behavior goal is the most measurable?",
+    answers:["The student will request a break in 4 of 5 opportunities","The student will behave better","The student will stop being rude","The student will improve attitude"],
+    correct:"The student will request a break in 4 of 5 opportunities",
+    explanation:"Measurable goals describe the behavior and the criterion. 'Behave better' is too vague."
+  },
+  {
+    domain:"Domain III - Crisis",
+    question:"A student begins throwing chairs and students are nearby. What is the first priority?",
+    answers:["Safety","Completing the assignment","Taking attendance","Finishing instruction"],
+    correct:"Safety",
+    explanation:"When there is immediate danger, safety is the first priority before instruction or consequences."
+  },
+  {
+    domain:"Domain III - Least Restrictive Response",
+    question:"A student blurts out answers during discussion. Which response is most appropriate first?",
+    answers:["Teach a signal for answering","Immediate suspension","Remove all participation","Call it defiance"],
+    correct:"Teach a signal for answering",
+    explanation:"For a manageable classroom behavior, teach and reinforce the expected behavior before using major consequences."
+  },
+  {
+    domain:"Domain III - Self-Monitoring",
+    question:"A student often does not realize when he is off task. Which strategy may help build independence?",
+    answers:["Self-monitoring checklist","More punishment only","No feedback","Peer teasing"],
+    correct:"Self-monitoring checklist",
+    explanation:"Self-monitoring helps students notice and track their own behavior, which builds independence."
+  },
+  {
+    domain:"Domain III - Token System",
+    question:"A student earns points for completing work and trades points for extra computer time. This is an example of:",
+    answers:["Token reinforcement system","Due process","Manifestation review","Universal screening"],
+    correct:"Token reinforcement system",
+    explanation:"Tokens or points can reinforce desired behaviors when they are exchanged for a preferred reward."
+  },
+  {
+    domain:"Domain III - Behavior Teaching",
+    question:"A student keeps grabbing materials from peers. What should the teacher teach?",
+    answers:["How to request materials","How to avoid all peers","How to hide materials","How to blame others"],
+    correct:"How to request materials",
+    explanation:"Teach the appropriate behavior that serves the same need. Requesting materials can replace grabbing."
+  },
+  {
+    domain:"Domain III - Environment",
+    question:"A student is most disruptive during noisy, crowded transitions. Which support is most appropriate?",
+    answers:["Structured transition routine","More crowded transitions","No warning bell","Public reprimands"],
+    correct:"Structured transition routine",
+    explanation:"If behavior happens during transitions, structure, routine, and clear expectations can prevent problems."
+  },
+  {
+    domain:"Domain III - Check-In",
+    question:"A student starts the day upset and then has behavior problems by second period. Which support may help?",
+    answers:["Morning check-in","Longer homework","Immediate suspension","No adult contact"],
+    correct:"Morning check-in",
+    explanation:"A check-in can identify problems early, build connection, and prevent escalation later."
+  },
+  {
+    domain:"Domain III - Reinforcing Replacement",
+    question:"A student learns to raise a break card instead of yelling. What should the teacher do when the student uses the card appropriately?",
+    answers:["Reinforce the request","Ignore it every time","Take the card away","Change the disability category"],
+    correct:"Reinforce the request",
+    explanation:"Replacement behaviors must work for the student. Reinforcing the appropriate request helps it continue."
+  },
+  {
+    domain:"Domain III - Avoiding Power Struggles",
+    question:"A student says, 'I'm not doing this.' What is the best first response?",
+    answers:["Offer calm choices","Argue publicly","Threaten immediately","Raise your voice"],
+    correct:"Offer calm choices",
+    explanation:"Calm choices can reduce power struggles and help the student re-engage without escalation."
+  },
+  {
+    domain:"Domain III - Social Behavior",
+    question:"A student interrupts peers because he does not know how to enter conversations. Which support is best?",
+    answers:["Teach conversation entry skills","Ban all group work","Ignore peer interaction","Punish all talking"],
+    correct:"Teach conversation entry skills",
+    explanation:"If the issue is a missing social skill, teach and practice the skill directly."
+  },
+  {
+    domain:"Domain III - Data-Based Decisions",
+    question:"A behavior plan has been used for several weeks. The team wants to know whether it is working. What should they review?",
+    answers:["Behavior data","Locker number","Lunch menu","Textbook title"],
+    correct:"Behavior data",
+    explanation:"Behavior plans should be evaluated with data such as frequency, duration, intensity, and replacement behavior use."
+  }
+];
+
+let player="", order=[], currentIndex=0, score=0, attempts=0, startTime=null, timerId=null, locked=false, missed=[], currentQuestion=null;
+const $ = id => document.getElementById(id);
+
+function shuffle(arr){
+  const copy=[...arr];
+  for(let i=copy.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+  return copy;
+}
+
+function formatTime(ms){
+  const total=Math.floor(ms/1000);
+  const min=Math.floor(total/60);
+  const sec=total%60;
+  return `${min}:${String(sec).padStart(2,"0")}`;
+}
+
+function startTimer(){
+  startTime=Date.now();
+  timerId=setInterval(()=>{$("timeOut").textContent=formatTime(Date.now()-startTime);},500);
+}
+
+function startGame(){
+  const name=$("studentName").value.trim();
+  if(!name){$("studentName").focus();return;}
+  player=name;
+  order=shuffle(BANK);
+  currentIndex=0;
+  score=0;
+  attempts=0;
+  missed=[];
+  locked=false;
+  $("playerOut").textContent=player;
+  $("nameScreen").classList.add("hidden");
+  $("summaryPanel").classList.add("hidden");
+  $("gamePanel").classList.remove("hidden");
+  clearInterval(timerId);
+  startTimer();
+  renderQuestion();
+}
+
+function renderQuestion(){
+  locked=false;
+  currentQuestion=order[currentIndex];
+  $("qNum").textContent=`${currentIndex+1}/${order.length}`;
+  $("scoreOut").textContent=score;
+  $("attemptsOut").textContent=attempts;
+  $("domainOut").textContent=currentQuestion.domain;
+  $("questionOut").textContent=currentQuestion.question;
+  $("feedbackOut").innerHTML="Choose the best behavior response. Look for the function, safety, and least intrusive support.";
+  $("answersOut").innerHTML="";
+  shuffle(currentQuestion.answers).forEach(ans=>{
+    const btn=document.createElement("button");
+    btn.className="answer-btn";
+    btn.type="button";
+    btn.textContent=ans;
+    btn.addEventListener("click",()=>chooseAnswer(btn,ans));
+    $("answersOut").appendChild(btn);
+  });
+}
+
+function chooseAnswer(btn,ans){
+  if(locked)return;
+  attempts++;
+  $("attemptsOut").textContent=attempts;
+
+  if(ans===currentQuestion.correct){
+    locked=true;
+    score++;
+    $("scoreOut").textContent=score;
+    btn.classList.add("correct");
+    $("feedbackOut").innerHTML=`<strong>Correct.</strong><br>${currentQuestion.explanation}<br><br><em>Next rep in 5 seconds...</em>`;
+    document.querySelectorAll(".answer-btn").forEach(b=>b.disabled=true);
+    setTimeout(nextQuestion,EXPLANATION_DELAY_MS);
+  }else{
+    btn.classList.add("wrong");
+    btn.disabled=true;
+    missed.push({
+      question:currentQuestion.question,
+      selected:ans,
+      correct:currentQuestion.correct,
+      explanation:currentQuestion.explanation,
+      domain:currentQuestion.domain
+    });
+    $("feedbackOut").innerHTML="<strong>Not quite.</strong><br>Try again. Look for the behavior pattern, the safest response, or the replacement behavior.";
+  }
+}
+
+function nextQuestion(){
+  currentIndex++;
+  if(currentIndex>=order.length){endGame();}
+  else{renderQuestion();}
+}
+
+function endGame(){
+  clearInterval(timerId);
+  const elapsed=Date.now()-startTime;
+  const accuracy=attempts?Math.round((score/attempts)*100):0;
+  $("gamePanel").classList.add("hidden");
+  $("summaryPanel").classList.remove("hidden");
+  $("finalScore").textContent=`${score}/${order.length}`;
+  $("finalAccuracy").textContent=`${accuracy}%`;
+  $("finalAttempts").textContent=attempts;
+  $("finalTime").textContent=formatTime(elapsed);
+
+  $("missedList").innerHTML=missed.length
+    ? missed.map(m=>`<div class="missed-item"><strong>${m.domain}</strong><br>${m.question}<br><strong>Correct call:</strong> ${m.correct}<br><em>${m.explanation}</em></div>`).join("")
+    : `<div class="missed-item"><strong>Clean install.</strong><br>No missed reps recorded.</div>`;
+
+  logResult({
+    game:"Install 4 - Behavior Response",
+    player,
+    score,
+    total:order.length,
+    attempts,
+    accuracy,
+    elapsedSeconds:Math.round(elapsed/1000),
+    missedCount:missed.length,
+    timestamp:new Date().toISOString()
+  });
+}
+
+function logResult(payload){
+  if(!SCRIPT_URL || SCRIPT_URL.includes("PASTE_YOUR")){
+    console.warn("Apps Script URL not set.",payload);
+    return;
+  }
+  fetch(SCRIPT_URL,{
+    method:"POST",
+    mode:"no-cors",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(payload)
+  }).catch(err=>console.warn("Logging failed",err));
+}
+
+function resetGame(){
+  clearInterval(timerId);
+  $("gamePanel").classList.add("hidden");
+  $("summaryPanel").classList.add("hidden");
+  $("nameScreen").classList.remove("hidden");
+  $("studentName").focus();
+}
+
+$("startBtn").addEventListener("click",startGame);
+$("studentName").addEventListener("keydown",e=>{if(e.key==="Enter")startGame();});
+$("resetBtn").addEventListener("click",resetGame);
+$("playAgainBtn").addEventListener("click",startGame);
+</script>
+</body>
+</html>
