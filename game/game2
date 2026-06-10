@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Install 2 - Know Your Players</title>
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <main class="game-shell">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">043</div>
+        <div><div class="pill">INSTALL 2</div><h2>Know Your Players</h2></div>
+      </div>
+      <div class="top-actions">
+        <a class="button-link" href="../index.html">← Hub</a>
+        <button class="danger" id="resetBtn" type="button">Reset</button>
+      </div>
+    </div>
+
+    <section id="nameScreen" class="name-screen">
+      <div class="name-card">
+        <div class="badge">THE 043 PLAYBOOK</div>
+        <h1 style="font-size:52px">Game 2</h1>
+        <p class="lead">Read the clues. Identify the learner. Choose the best support.</p>
+        <label for="studentName">Player Name</label>
+        <input id="studentName" placeholder="Enter name" autocomplete="name" />
+        <button class="primary" id="startBtn" type="button" style="margin-top:18px;width:100%">Start Install</button>
+      </div>
+    </section>
+
+    <section id="gamePanel" class="game-panel hidden">
+      <div class="score-row">
+        <div class="score-box"><span>PLAYER</span><strong id="playerOut">—</strong></div>
+        <div class="score-box"><span>QUESTION</span><strong id="qNum">1/25</strong></div>
+        <div class="score-box"><span>SCORE</span><strong id="scoreOut">0</strong></div>
+        <div class="score-box"><span>ATTEMPTS</span><strong id="attemptsOut">0</strong></div>
+        <div class="score-box"><span>TIME</span><strong id="timeOut">0:00</strong></div>
+      </div>
+
+      <div class="question-card">
+        <div class="domain" id="domainOut">DOMAIN</div>
+        <div class="question" id="questionOut">Question text</div>
+        <div class="answers" id="answersOut"></div>
+        <div class="feedback" id="feedbackOut">Choose the best answer. Correct-answer explanation stays for 5 seconds before the next rep.</div>
+      </div>
+    </section>
+
+    <section id="summaryPanel" class="summary-panel hidden">
+      <div class="badge">INSTALL COMPLETE</div>
+      <h1 style="font-size:54px">Game Film</h1>
+      <div class="summary-grid">
+        <div class="mini"><span>Score</span><h2 id="finalScore">—</h2></div>
+        <div class="mini"><span>Accuracy</span><h2 id="finalAccuracy">—</h2></div>
+        <div class="mini"><span>Attempts</span><h2 id="finalAttempts">—</h2></div>
+        <div class="mini"><span>Time</span><h2 id="finalTime">—</h2></div>
+      </div>
+      <button class="primary" id="playAgainBtn" type="button">Run It Back</button>
+      <h2 style="margin-top:26px">Missed / Repped Concepts</h2>
+      <div id="missedList" class="missed-list"></div>
+    </section>
+  </main>
+
+<script>
+const SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+const EXPLANATION_DELAY_MS = 5000;
+
+const BANK = [
+{domain:"Domain I - Disability Characteristics",question:"A student has average cognitive ability but struggles significantly with decoding, spelling, and written expression. Which disability category is most likely?",answers:["Specific learning disability","Orthopedic impairment","Visual impairment","Deaf-blindness"],correct:"Specific learning disability",explanation:"SLD often shows as a significant academic skill weakness despite average overall ability."},
+{domain:"Domain I - Autism",question:"A student has difficulty with reciprocal conversation, becomes upset by schedule changes, and has intense restricted interests. Which disability is most strongly suggested?",answers:["Autism spectrum disorder","Speech sound disorder only","Specific learning disability","Orthopedic impairment"],correct:"Autism spectrum disorder",explanation:"Social communication differences plus restricted interests and difficulty with change are common ASD clues."},
+{domain:"Domain I - ADHD / Attention",question:"A student frequently loses materials, forgets multi-step directions, and struggles to sustain attention during independent work. Which support is most appropriate?",answers:["Visual checklist and chunked directions","Longer lectures","Public correction","Removal from all group work"],correct:"Visual checklist and chunked directions",explanation:"Attention and executive-function needs are supported by chunking, visual reminders, routines, and structure."},
+{domain:"Domain I - Intellectual Disability",question:"A student demonstrates significant limitations in intellectual functioning and adaptive behavior across home, school, and community settings. Which category is most likely?",answers:["Intellectual disability","Specific learning disability","Speech impairment only","Other health impairment only"],correct:"Intellectual disability",explanation:"Intellectual disability includes both intellectual functioning and adaptive behavior limitations."},
+{domain:"Domain I - Emotional Disturbance",question:"A student has ongoing intense anxiety, difficulty building relationships, and emotional responses that interfere with learning over time. Which area may be suspected?",answers:["Emotional disturbance","Visual impairment","Orthopedic impairment","Hearing impairment only"],correct:"Emotional disturbance",explanation:"Long-term emotional or behavioral characteristics that adversely affect learning may suggest emotional disturbance."},
+{domain:"Domain I - Other Health Impairment",question:"A student with ADHD has limited alertness and attention that affects educational performance. Which IDEA category may apply?",answers:["Other health impairment","Deaf-blindness","Traumatic brain injury only","Multiple disabilities only"],correct:"Other health impairment",explanation:"ADHD is commonly considered under Other Health Impairment when it affects educational performance."},
+{domain:"Domain I - Speech / Language",question:"A student has difficulty understanding and using spoken language, which affects classroom participation and academic performance. Which need is most directly indicated?",answers:["Language impairment support","Physical therapy only","Orientation and mobility only","Vision services only"],correct:"Language impairment support",explanation:"Difficulty understanding and using language points to language impairment, not just articulation."},
+{domain:"Domain I - Hearing Impairment",question:"A student misses oral directions, responds inconsistently to speech, and benefits from captions and preferential seating. Which area should be considered?",answers:["Hearing impairment","Autism only","Specific learning disability only","Orthopedic impairment"],correct:"Hearing impairment",explanation:"Difficulty accessing spoken information and benefit from captions/preferential seating are hearing-access clues."},
+{domain:"Domain I - Visual Impairment",question:"A student struggles to read standard print, needs enlarged materials, and benefits from high-contrast visual supports. Which category is most relevant?",answers:["Visual impairment","Speech impairment","Emotional disturbance","Other health impairment"],correct:"Visual impairment",explanation:"Access to print and visual information is the key clue for visual impairment."},
+{domain:"Domain I - Orthopedic Impairment",question:"A student has a physical condition that limits mobility and requires adapted seating and access to classroom materials. Which category is most relevant?",answers:["Orthopedic impairment","Specific learning disability","Autism","Speech impairment"],correct:"Orthopedic impairment",explanation:"Orthopedic impairment involves physical limitations that can affect educational access and participation."},
+{domain:"Domain I - Traumatic Brain Injury",question:"After a car accident, a student shows new memory, attention, and problem-solving difficulties that affect school performance. Which disability area may apply?",answers:["Traumatic brain injury","Specific learning disability from birth","Speech sound disorder only","Visual impairment only"],correct:"Traumatic brain injury",explanation:"TBI involves acquired injury to the brain that can affect cognition, behavior, and school performance."},
+{domain:"Domain I - Multiple Disabilities",question:"A student has significant needs from two or more disabilities that require highly coordinated services and cannot be addressed by one category alone. Which category may fit?",answers:["Multiple disabilities","Speech impairment only","Specific learning disability only","Developmental delay only"],correct:"Multiple disabilities",explanation:"Multiple disabilities refers to combined impairments causing severe educational needs."},
+{domain:"Domain III - Instructional Supports",question:"A student with weak working memory is overwhelmed by long oral directions. Which strategy is BEST?",answers:["Give one step at a time and provide a written/visual cue","Repeat the same long direction faster","Remove the student from instruction","Use only timed tests"],correct:"Give one step at a time and provide a written/visual cue",explanation:"Working memory needs are supported by reducing load, chunking directions, and providing visual cues."},
+{domain:"Domain III - Reading Supports",question:"A student decodes accurately but cannot explain main idea or details after reading. Which support is most appropriate?",answers:["Explicit comprehension strategy instruction","More phonics drills only","Larger pencil grip","Preferential seating only"],correct:"Explicit comprehension strategy instruction",explanation:"If decoding is adequate but meaning is weak, target comprehension strategies."},
+{domain:"Domain III - Reading Supports",question:"A student struggles to connect letters to sounds and has poor decoding accuracy. Which instruction is most appropriate?",answers:["Explicit phonics and phonemic awareness instruction","Independent silent reading only","Advanced literary analysis","More oral presentations"],correct:"Explicit phonics and phonemic awareness instruction",explanation:"Weak decoding points to foundational reading instruction in phonemic awareness and phonics."},
+{domain:"Domain III - Writing Supports",question:"A student has strong ideas but poor spelling, organization, and written output. Which support is BEST?",answers:["Graphic organizer and assistive writing tools","Fewer opportunities to write","Only oral grades","Public comparison to peers"],correct:"Graphic organizer and assistive writing tools",explanation:"Writing needs can be supported with organization tools, word prediction, speech-to-text, and explicit instruction."},
+{domain:"Domain III - Math Supports",question:"A student understands math concepts during instruction but forgets multi-step procedures on independent work. Which support is BEST?",answers:["Step-by-step problem checklist","Longer problem sets without supports","Immediate calculator ban","Skip math instruction"],correct:"Step-by-step problem checklist",explanation:"A procedural checklist helps the student follow steps independently."},
+{domain:"Domain III - Autism Supports",question:"A student becomes distressed during transitions between activities. Which support is BEST?",answers:["Visual schedule and transition warnings","Unexpected schedule changes as practice","Loss of recess every time","No communication before transitions"],correct:"Visual schedule and transition warnings",explanation:"Predictability, visual schedules, and warnings support transition difficulties."},
+{domain:"Domain III - Behavior / Self-Regulation",question:"A student escalates when frustrated and needs help recognizing emotions before behavior becomes unsafe. Which support is BEST?",answers:["Self-monitoring and calming strategy instruction","Immediate removal from all difficult work","Ignoring all signs of frustration","Only punishment after escalation"],correct:"Self-monitoring and calming strategy instruction",explanation:"Self-regulation is taught through recognizing signs, practicing strategies, and reinforcing use."},
+{domain:"Domain III - Social Skills",question:"A student wants friends but misreads social cues and interrupts conversations. Which support is BEST?",answers:["Direct social skills instruction with practice and feedback","Avoid all peer interaction","Publicly correct every mistake","Assign only independent work"],correct:"Direct social skills instruction with practice and feedback",explanation:"Social skills often need explicit teaching, modeling, practice, and feedback."},
+{domain:"Domain III - Assistive Technology",question:"A student with limited fine-motor control cannot write enough to show what he knows. Which support should be considered?",answers:["Assistive technology for written output","More handwritten copying","Lower all academic expectations","No written responses ever"],correct:"Assistive technology for written output",explanation:"Assistive technology can reduce the access barrier while preserving academic expectations."},
+{domain:"Domain III - Communication",question:"A student uses an AAC device. Which teacher behavior is most appropriate?",answers:["Provide wait time and accept the device as the student's voice","Require speech before accepting answers","Answer for the student","Avoid asking questions"],correct:"Provide wait time and accept the device as the student's voice",explanation:"AAC is communication. The teacher should include the student and provide sufficient wait time."},
+{domain:"Domain I - Adaptive Behavior",question:"A student struggles with daily living skills, following routines, and independent functioning across settings. Which area is being described?",answers:["Adaptive behavior","Phonemic awareness","Visual acuity","Articulation only"],correct:"Adaptive behavior",explanation:"Adaptive behavior includes practical, social, and daily living skills needed for independence."},
+{domain:"Domain III - UDL",question:"A teacher provides text, audio, visuals, and hands-on options for learning the same concept. Which framework does this reflect?",answers:["Universal Design for Learning","Zero-tolerance discipline","Retention policy","Summative assessment only"],correct:"Universal Design for Learning",explanation:"UDL provides multiple means of engagement, representation, and expression."},
+{domain:"Domain III - Least Support Needed",question:"A student can complete tasks independently after a brief visual cue. What should the teacher do?",answers:["Use the least intrusive prompt that supports success","Provide full physical assistance every time","Remove the task entirely","Give no feedback"],correct:"Use the least intrusive prompt that supports success",explanation:"Use supports that build independence. Too much prompting can create dependence."}
+];
+
+let player="",order=[],currentIndex=0,score=0,attempts=0,startTime=null,timerId=null,locked=false,missed=[],currentQuestion=null;
+const $=id=>document.getElementById(id);
+function shuffle(arr){const c=[...arr];for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]];}return c;}
+function formatTime(ms){const t=Math.floor(ms/1000),m=Math.floor(t/60),s=t%60;return `${m}:${String(s).padStart(2,"0")}`;}
+function startTimer(){startTime=Date.now();timerId=setInterval(()=>$("timeOut").textContent=formatTime(Date.now()-startTime),500);}
+function startGame(){const name=$("studentName").value.trim();if(!name){$("studentName").focus();return;}player=name;order=shuffle(BANK);currentIndex=0;score=0;attempts=0;missed=[];locked=false;$("playerOut").textContent=player;$("nameScreen").classList.add("hidden");$("summaryPanel").classList.add("hidden");$("gamePanel").classList.remove("hidden");clearInterval(timerId);startTimer();renderQuestion();}
+function renderQuestion(){locked=false;currentQuestion=order[currentIndex];$("qNum").textContent=`${currentIndex+1}/${order.length}`;$("scoreOut").textContent=score;$("attemptsOut").textContent=attempts;$("domainOut").textContent=currentQuestion.domain;$("questionOut").textContent=currentQuestion.question;$("feedbackOut").innerHTML="Choose the best answer. Read the clues carefully.";$("answersOut").innerHTML="";shuffle(currentQuestion.answers).forEach(ans=>{const btn=document.createElement("button");btn.className="answer-btn";btn.type="button";btn.textContent=ans;btn.addEventListener("click",()=>chooseAnswer(btn,ans));$("answersOut").appendChild(btn);});}
+function chooseAnswer(btn,ans){if(locked)return;attempts++;$("attemptsOut").textContent=attempts;if(ans===currentQuestion.correct){locked=true;score++;$("scoreOut").textContent=score;btn.classList.add("correct");$("feedbackOut").innerHTML=`<strong>Correct.</strong><br>${currentQuestion.explanation}<br><br><em>Next rep in 5 seconds...</em>`;document.querySelectorAll(".answer-btn").forEach(b=>b.disabled=true);setTimeout(nextQuestion,EXPLANATION_DELAY_MS);}else{btn.classList.add("wrong");btn.disabled=true;missed.push({question:currentQuestion.question,selected:ans,correct:currentQuestion.correct,explanation:currentQuestion.explanation,domain:currentQuestion.domain});$("feedbackOut").innerHTML="<strong>Not quite.</strong><br>That choice sounds possible, but it is not the best fit. Try again and focus on the student clues.";}}
+function nextQuestion(){currentIndex++;currentIndex>=order.length?endGame():renderQuestion();}
+function endGame(){clearInterval(timerId);const elapsed=Date.now()-startTime,accuracy=attempts?Math.round((score/attempts)*100):0;$("gamePanel").classList.add("hidden");$("summaryPanel").classList.remove("hidden");$("finalScore").textContent=`${score}/${order.length}`;$("finalAccuracy").textContent=`${accuracy}%`;$("finalAttempts").textContent=attempts;$("finalTime").textContent=formatTime(elapsed);$("missedList").innerHTML=missed.length?missed.map(m=>`<div class="missed-item"><strong>${m.domain}</strong><br>${m.question}<br><strong>Correct call:</strong> ${m.correct}<br><em>${m.explanation}</em></div>`).join(""):`<div class="missed-item"><strong>Clean install.</strong><br>No missed reps recorded.</div>`;logResult({game:"Install 2 - Know Your Players",player,score,total:order.length,attempts,accuracy,elapsedSeconds:Math.round(elapsed/1000),missedCount:missed.length,timestamp:new Date().toISOString()});}
+function logResult(payload){if(!SCRIPT_URL||SCRIPT_URL.includes("PASTE_YOUR")){console.warn("Apps Script URL not set.",payload);return;}fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}).catch(err=>console.warn("Logging failed",err));}
+function resetGame(){clearInterval(timerId);$("gamePanel").classList.add("hidden");$("summaryPanel").classList.add("hidden");$("nameScreen").classList.remove("hidden");$("studentName").focus();}
+$("startBtn").addEventListener("click",startGame);$("studentName").addEventListener("keydown",e=>{if(e.key==="Enter")startGame();});$("resetBtn").addEventListener("click",resetGame);$("playAgainBtn").addEventListener("click",startGame);
+</script>
+</body>
+</html>
