@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The 043 Playbook</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <main class="hub-shell">
+
+    <section class="hero-card">
+      <div class="badge">OAE 043 SPECIAL EDUCATION</div>
+
+      <h1>The 043 Playbook</h1>
+
+      <p class="lead">
+        Learn. Practice. Improve. Repeat.
+      </p>
+
+      <div class="progress-card">
+        <div class="progress-label-row">
+          <span>Install Progress</span>
+          <strong>0 / 5 Complete</strong>
+        </div>
+
+        <div class="progress-track">
+          <div class="progress-fill" style="width: 0%;"></div>
+        </div>
+
+        <div class="progress-note">
+          Press LIVE to begin Install 1.
+        </div>
+      </div>
+    </section>
+
+    <section class="install-grid">
+
+      <a class="game-card live" href="game1.html">
+        <div class="live-row">
+          <span class="live-dot"></span>
+          <span class="live-text">LIVE</span>
+        </div>
+
+        <div class="install-tag">INSTALL 1</div>
+
+        <h2>Know the Rules</h2>
+
+        <p>
+          IDEA, FAPE, LRE, FERPA, Section 504, ADA,
+          IEP procedure, and first-best-move scenarios.
+        </p>
+
+        <div class="card-footer">Press to Begin →</div>
+      </a>
+
+      <div class="game-card locked">
+        <div class="lock-row">🔒 LOCKED</div>
+
+        <div class="install-tag">INSTALL 2</div>
+
+        <h2>Know Your Players</h2>
+
+        <p>
+          Disability characteristics, student clues, learning needs,
+          and best instructional supports.
+        </p>
+
+        <div class="card-footer">Coming next</div>
+      </div>
+
+      <div class="game-card locked">
+        <div class="lock-row">🔒 LOCKED</div>
+
+        <div class="install-tag">INSTALL 3</div>
+
+        <h2>First Best Move</h2>
+
+        <p>
+          Practice the most common OAE question pattern:
+          what should the teacher or intervention specialist do first?
+        </p>
+
+        <div class="card-footer">Coming next</div>
+      </div>
+
+      <div class="game-card locked">
+        <div class="lock-row">🔒 LOCKED</div>
+
+        <div class="install-tag">INSTALL 4</div>
+
+        <h2>Behavior Response</h2>
+
+        <p>
+          FBA, BIP, replacement behaviors, positive supports,
+          crisis prevention, and least restrictive interventions.
+        </p>
+
+        <div class="card-footer">Coming next</div>
+      </div>
+
+      <div class="game-card locked">
+        <div class="lock-row">🔒 LOCKED</div>
+
+        <div class="install-tag">INSTALL 5</div>
+
+        <h2>IEP Game Day</h2>
+
+        <p>
+          Evaluation, eligibility, measurable goals, services,
+          accommodations, placement, and progress monitoring.
+        </p>
+
+        <div class="card-footer">Coming next</div>
+      </div>
+
+      <div class="game-card utility-card">
+        <div class="install-tag">GAME FILM</div>
+
+        <h2>Review & Progress</h2>
+
+        <p>
+          After more installs are built, this section can show missed concepts,
+          personal bests, completion data, and progress trends.
+        </p>
+
+        <div class="card-footer">Coming soon</div>
+      </div>
+
+    </section>
+
+  </main>
+</body>
+</html>
