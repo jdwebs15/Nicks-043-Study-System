@@ -56,7 +56,7 @@
   </main>
 
 <script>
-const SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMYDRlpGHjGNUe_Eil7tJzWJCGz-W_zzz5JL9rI54966IS1mmqtBDn1PtWXp3Uo9Ye/exec";
 const EXPLANATION_DELAY_MS = 5000;
 
 const BANK = [
@@ -97,8 +97,7 @@ function renderQuestion(){locked=false;currentQuestion=order[currentIndex];$("qN
 function chooseAnswer(btn,ans){if(locked)return;attempts++;$("attemptsOut").textContent=attempts;if(ans===currentQuestion.correct){locked=true;score++;$("scoreOut").textContent=score;btn.classList.add("correct");$("feedbackOut").innerHTML=`<strong>Correct.</strong><br>${currentQuestion.explanation}<br><br><em>Next rep in 5 seconds...</em>`;document.querySelectorAll(".answer-btn").forEach(b=>b.disabled=true);setTimeout(nextQuestion,EXPLANATION_DELAY_MS);}else{btn.classList.add("wrong");btn.disabled=true;missed.push({question:currentQuestion.question,selected:ans,correct:currentQuestion.correct,explanation:currentQuestion.explanation,domain:currentQuestion.domain});$("feedbackOut").innerHTML="<strong>Not quite.</strong><br>That answer sounds possible, but it is not the best OAE answer. Try again. Look for the legal, procedural, or instructional clue.";}}
 function nextQuestion(){currentIndex++;currentIndex>=order.length?endGame():renderQuestion();}
 function endGame(){clearInterval(timerId);const elapsed=Date.now()-startTime,accuracy=attempts?Math.round((score/attempts)*100):0;$("gamePanel").classList.add("hidden");$("summaryPanel").classList.remove("hidden");$("finalScore").textContent=`${score}/${order.length}`;$("finalAccuracy").textContent=`${accuracy}%`;$("finalAttempts").textContent=attempts;$("finalTime").textContent=formatTime(elapsed);$("missedList").innerHTML=missed.length?missed.map(m=>`<div class="missed-item"><strong>${m.domain}</strong><br>${m.question}<br><strong>Correct call:</strong> ${m.correct}<br><em>${m.explanation}</em></div>`).join(""):`<div class="missed-item"><strong>Clean install.</strong><br>No missed reps recorded.</div>`;logResult({game:"Install 1 - Know the Rules",player,score,total:order.length,attempts,accuracy,elapsedSeconds:Math.round(elapsed/1000),missedCount:missed.length,
-missedItems:missed,
-timestamp:new Date().toISOString()});}
+    missedItems:missed,timestamp:new Date().toISOString()});}
 function logResult(payload){if(!SCRIPT_URL||SCRIPT_URL.includes("PASTE_YOUR")){console.warn("Apps Script URL not set.",payload);return;}fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}).catch(err=>console.warn("Logging failed",err));}
 function resetGame(){clearInterval(timerId);$("gamePanel").classList.add("hidden");$("summaryPanel").classList.add("hidden");$("nameScreen").classList.remove("hidden");$("studentName").focus();}
 $("startBtn").addEventListener("click",startGame);$("studentName").addEventListener("keydown",e=>{if(e.key==="Enter")startGame();});$("resetBtn").addEventListener("click",resetGame);$("playAgainBtn").addEventListener("click",startGame);
