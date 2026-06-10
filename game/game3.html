@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Install 3 - First Best Move</title>
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <main class="game-shell">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">043</div>
+        <div>
+          <div class="pill">INSTALL 3</div>
+          <h2>First Best Move</h2>
+        </div>
+      </div>
+      <div class="top-actions">
+        <a class="button-link" href="../index.html">← Hub</a>
+        <button class="danger" id="resetBtn" type="button">Reset</button>
+      </div>
+    </div>
+
+    <section id="nameScreen" class="name-screen">
+      <div class="name-card">
+        <div class="badge">THE 043 PLAYBOOK</div>
+        <h1 style="font-size:52px">Game 3</h1>
+        <p class="lead">Read the scenario. Find the clue. Make the best first move.</p>
+        <label for="studentName">Player Name</label>
+        <input id="studentName" placeholder="Enter name" autocomplete="name" />
+        <button class="primary" id="startBtn" type="button" style="margin-top:18px;width:100%">Start Install</button>
+      </div>
+    </section>
+
+    <section id="gamePanel" class="game-panel hidden">
+      <div class="score-row">
+        <div class="score-box"><span>PLAYER</span><strong id="playerOut">—</strong></div>
+        <div class="score-box"><span>QUESTION</span><strong id="qNum">1/25</strong></div>
+        <div class="score-box"><span>SCORE</span><strong id="scoreOut">0</strong></div>
+        <div class="score-box"><span>ATTEMPTS</span><strong id="attemptsOut">0</strong></div>
+        <div class="score-box"><span>TIME</span><strong id="timeOut">0:00</strong></div>
+      </div>
+
+      <div class="question-card">
+        <div class="domain" id="domainOut">DOMAIN</div>
+        <div class="question" id="questionOut">Question text</div>
+        <div class="answers" id="answersOut"></div>
+        <div class="feedback" id="feedbackOut">Choose the best first move. Correct-answer explanation stays for 5 seconds before the next rep.</div>
+      </div>
+    </section>
+
+    <section id="summaryPanel" class="summary-panel hidden">
+      <div class="badge">INSTALL COMPLETE</div>
+      <h1 style="font-size:54px">Game Film</h1>
+      <div class="summary-grid">
+        <div class="mini"><span>Score</span><h2 id="finalScore">—</h2></div>
+        <div class="mini"><span>Accuracy</span><h2 id="finalAccuracy">—</h2></div>
+        <div class="mini"><span>Attempts</span><h2 id="finalAttempts">—</h2></div>
+        <div class="mini"><span>Time</span><h2 id="finalTime">—</h2></div>
+      </div>
+      <button class="primary" id="playAgainBtn" type="button">Run It Back</button>
+      <h2 style="margin-top:26px">Missed / Repped Concepts</h2>
+      <div id="missedList" class="missed-list"></div>
+    </section>
+  </main>
+
+<script>
+const SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+const EXPLANATION_DELAY_MS = 5000;
+
+const BANK = [
+  {
+    domain:"Domain II - Referral",
+    question:"A teacher says a student has struggled for months and asks you to 'just put him on an IEP.' What should happen first?",
+    answers:["Review data and start referral steps","Write goals today","Move the student out","Lower the class grade"],
+    correct:"Review data and start referral steps",
+    explanation:"Look for the clue: 'put him on an IEP.' Eligibility must come before an IEP. Start with data and referral/evaluation procedures."
+  },
+  {
+    domain:"Domain II - Progress Monitoring",
+    question:"A student is not making progress toward an IEP reading goal. What should the intervention specialist do first?",
+    answers:["Review progress data","Change placement","Stop the goal","Wait until spring"],
+    correct:"Review progress data",
+    explanation:"Look for the clue: 'not making progress.' First review data, then adjust instruction or supports."
+  },
+  {
+    domain:"Domain IV - Confidentiality",
+    question:"A staff member who does not teach a student asks to see the student's IEP. What is the best first response?",
+    answers:["Check educational need","Send the whole file","Name the disability","Ask another student"],
+    correct:"Check educational need",
+    explanation:"Student information is confidential. First decide whether the person has a legitimate educational reason to know."
+  },
+  {
+    domain:"Domain III - Behavior",
+    question:"A student begins yelling during independent work. No one is in danger. What should the teacher do first?",
+    answers:["Use a calm redirect","Call police","Suspend immediately","Argue with the student"],
+    correct:"Use a calm redirect",
+    explanation:"If there is no immediate danger, start with a calm, least intrusive response. Escalation should not be the first move."
+  },
+  {
+    domain:"Domain III - Behavior",
+    question:"A student repeatedly leaves his seat during math. What should the teacher do first?",
+    answers:["Identify the pattern","Remove all math","Call it defiance","Ignore every time"],
+    correct:"Identify the pattern",
+    explanation:"Repeated behavior should be understood before choosing an intervention. Look for when, why, and what the student gets from it."
+  },
+  {
+    domain:"Domain II - Parent Concern",
+    question:"A parent says her child is not receiving an accommodation listed in the IEP. What should the intervention specialist do first?",
+    answers:["Check the IEP and implementation","Dismiss the concern","Rewrite eligibility","Wait for annual review"],
+    correct:"Check the IEP and implementation",
+    explanation:"The clue is 'listed in the IEP.' First verify what the IEP says and whether it is being implemented."
+  },
+  {
+    domain:"Domain III - Instruction",
+    question:"A student struggles to complete long assignments but understands the content. What should the teacher do first?",
+    answers:["Check access supports","Lower expectations","Fail the assignment","Remove the student"],
+    correct:"Check access supports",
+    explanation:"If the student knows the content but struggles with access or output, look first at accommodations or supports."
+  },
+  {
+    domain:"Domain III - Communication",
+    question:"A student using an AAC device is asked a question and takes extra time to respond. What should the teacher do first?",
+    answers:["Provide wait time","Answer for him","Skip the student","Require speech"],
+    correct:"Provide wait time",
+    explanation:"AAC is the student's voice. The first move is to provide wait time and include the student."
+  },
+  {
+    domain:"Domain II - Assessment",
+    question:"A teacher wants to know whether a new intervention is helping a student. What should be done first?",
+    answers:["Collect progress data","Change disability category","End the intervention","Retain the student"],
+    correct:"Collect progress data",
+    explanation:"The clue is whether the intervention is working. Progress monitoring data gives that answer."
+  },
+  {
+    domain:"Domain IV - Parent Rights",
+    question:"A parent disagrees with the school evaluation. What should the school do first?",
+    answers:["Explain parent rights","Ignore the complaint","Exit services","Change grades"],
+    correct:"Explain parent rights",
+    explanation:"Disagreement with evaluation triggers procedural safeguards and parent rights. The school should follow due process procedures."
+  },
+  {
+    domain:"Domain III - Autism Supports",
+    question:"A student becomes upset when the daily schedule changes. What should the teacher do first next time?",
+    answers:["Give advance warning","Surprise him often","Remove visuals","Punish the reaction"],
+    correct:"Give advance warning",
+    explanation:"The clue is difficulty with schedule change. Use predictability, visual schedules, and transition warnings."
+  },
+  {
+    domain:"Domain II - IEP Goals",
+    question:"An IEP goal says, 'The student will improve in writing.' What should the team do first?",
+    answers:["Make the goal measurable","Delete writing services","Change placement","Add detention"],
+    correct:"Make the goal measurable",
+    explanation:"IEP goals must be measurable. Vague goals need clear condition, behavior, criterion, and progress measurement."
+  },
+  {
+    domain:"Domain III - Reading",
+    question:"A student reads words accurately but cannot explain what the passage means. What should instruction target first?",
+    answers:["Comprehension strategies","Letter sounds only","Handwriting speed","Locker organization"],
+    correct:"Comprehension strategies",
+    explanation:"The clue is accurate word reading but weak understanding. That points to reading comprehension."
+  },
+  {
+    domain:"Domain III - Reading",
+    question:"A student cannot sound out unfamiliar words and guesses based on pictures. What should instruction target first?",
+    answers:["Phonics and decoding","Essay structure","Peer tutoring only","Keyboarding speed"],
+    correct:"Phonics and decoding",
+    explanation:"The clue is difficulty sounding out words. That points to decoding, phonics, and phonemic awareness."
+  },
+  {
+    domain:"Domain III - Writing",
+    question:"A student has good ideas but cannot organize them into a paragraph. What should the teacher try first?",
+    answers:["Graphic organizer","Longer essay","No writing tasks","Oral answers only"],
+    correct:"Graphic organizer",
+    explanation:"The clue is organization. A graphic organizer helps structure ideas before writing."
+  },
+  {
+    domain:"Domain III - Math",
+    question:"A student understands math in class but forgets steps during independent work. What should the teacher try first?",
+    answers:["Step checklist","Harder problems","Remove examples","Stop math homework"],
+    correct:"Step checklist",
+    explanation:"The clue is forgetting procedures. A step checklist supports independence without lowering the expectation."
+  },
+  {
+    domain:"Domain IV - Collaboration",
+    question:"A general education teacher says an accommodation is too inconvenient to provide. What should happen first?",
+    answers:["Review IEP responsibility","Remove the support","Ignore the teacher","Ask the student to waive it"],
+    correct:"Review IEP responsibility",
+    explanation:"If an accommodation is in the IEP, it must be implemented. First clarify the responsibility and support the teacher."
+  },
+  {
+    domain:"Domain III - Behavior",
+    question:"A student refuses work every time writing begins. What should the teacher do first?",
+    answers:["Look for the function","Call it laziness","Give zeroes only","Remove all writing"],
+    correct:"Look for the function",
+    explanation:"Repeated refusal during the same task suggests a pattern. First determine what the behavior is communicating or avoiding."
+  },
+  {
+    domain:"Domain II - Evaluation",
+    question:"A parent requests an evaluation in writing. What should the school do first?",
+    answers:["Follow evaluation procedures","Write an IEP goal","Change teachers","Wait one year"],
+    correct:"Follow evaluation procedures",
+    explanation:"A written parent request should trigger the school's evaluation/referral process and required notices."
+  },
+  {
+    domain:"Domain III - Assistive Technology",
+    question:"A student cannot write enough by hand to show what he knows. What should the team consider first?",
+    answers:["Assistive technology","Lower content goals","No written work","A grade penalty"],
+    correct:"Assistive technology",
+    explanation:"If motor output blocks the student from showing knowledge, consider AT or access supports before lowering expectations."
+  },
+  {
+    domain:"Domain III - Classroom Management",
+    question:"Several students are confused after oral directions. What should the teacher do first?",
+    answers:["Restate and model steps","Move on quickly","Give a quiz","Call parents"],
+    correct:"Restate and model steps",
+    explanation:"If many students are confused, the first move is clearer instruction, modeling, and checking understanding."
+  },
+  {
+    domain:"Domain I - Student Characteristics",
+    question:"A student has trouble with daily living routines and independence across settings. What should the team examine first?",
+    answers:["Adaptive behavior","State test score","Locker color","Attendance only"],
+    correct:"Adaptive behavior",
+    explanation:"The clue is independence across daily routines. That points to adaptive behavior."
+  },
+  {
+    domain:"Domain III - Inclusion",
+    question:"A student with a disability can participate in general education with supports. What should the team consider first?",
+    answers:["Supports in general education","More restrictive placement","Home instruction","No peer interaction"],
+    correct:"Supports in general education",
+    explanation:"LRE means begin with access to general education with appropriate supports when possible."
+  },
+  {
+    domain:"Domain II - Transition",
+    question:"An older student with an IEP is unsure about work or training after graduation. What should the team address first?",
+    answers:["Transition interests","Elementary records","Locker assignment","Lunch seating"],
+    correct:"Transition interests",
+    explanation:"The clue is life after graduation. Transition planning starts with interests, strengths, needs, and post-school goals."
+  },
+  {
+    domain:"Domain III - Self-Advocacy",
+    question:"A student does not know when or how to ask for approved help. What should the teacher teach first?",
+    answers:["Self-advocacy skills","Test answers","Avoidance","Dependency"],
+    correct:"Self-advocacy skills",
+    explanation:"Students need to learn how to understand their supports and ask for help appropriately."
+  }
+];
+
+let player="", order=[], currentIndex=0, score=0, attempts=0, startTime=null, timerId=null, locked=false, missed=[], currentQuestion=null;
+const $ = id => document.getElementById(id);
+
+function shuffle(arr){
+  const copy=[...arr];
+  for(let i=copy.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+  return copy;
+}
+
+function formatTime(ms){
+  const total=Math.floor(ms/1000);
+  const min=Math.floor(total/60);
+  const sec=total%60;
+  return `${min}:${String(sec).padStart(2,"0")}`;
+}
+
+function startTimer(){
+  startTime=Date.now();
+  timerId=setInterval(()=>{$("timeOut").textContent=formatTime(Date.now()-startTime);},500);
+}
+
+function startGame(){
+  const name=$("studentName").value.trim();
+  if(!name){$("studentName").focus();return;}
+  player=name;
+  order=shuffle(BANK);
+  currentIndex=0;
+  score=0;
+  attempts=0;
+  missed=[];
+  locked=false;
+  $("playerOut").textContent=player;
+  $("nameScreen").classList.add("hidden");
+  $("summaryPanel").classList.add("hidden");
+  $("gamePanel").classList.remove("hidden");
+  clearInterval(timerId);
+  startTimer();
+  renderQuestion();
+}
+
+function renderQuestion(){
+  locked=false;
+  currentQuestion=order[currentIndex];
+  $("qNum").textContent=`${currentIndex+1}/${order.length}`;
+  $("scoreOut").textContent=score;
+  $("attemptsOut").textContent=attempts;
+  $("domainOut").textContent=currentQuestion.domain;
+  $("questionOut").textContent=currentQuestion.question;
+  $("feedbackOut").innerHTML="Choose the best first move. Look for the clue in the scenario.";
+  $("answersOut").innerHTML="";
+  shuffle(currentQuestion.answers).forEach(ans=>{
+    const btn=document.createElement("button");
+    btn.className="answer-btn";
+    btn.type="button";
+    btn.textContent=ans;
+    btn.addEventListener("click",()=>chooseAnswer(btn,ans));
+    $("answersOut").appendChild(btn);
+  });
+}
+
+function chooseAnswer(btn,ans){
+  if(locked)return;
+  attempts++;
+  $("attemptsOut").textContent=attempts;
+
+  if(ans===currentQuestion.correct){
+    locked=true;
+    score++;
+    $("scoreOut").textContent=score;
+    btn.classList.add("correct");
+    $("feedbackOut").innerHTML=`<strong>Correct.</strong><br>${currentQuestion.explanation}<br><br><em>Next rep in 5 seconds...</em>`;
+    document.querySelectorAll(".answer-btn").forEach(b=>b.disabled=true);
+    setTimeout(nextQuestion,EXPLANATION_DELAY_MS);
+  }else{
+    btn.classList.add("wrong");
+    btn.disabled=true;
+    missed.push({
+      question:currentQuestion.question,
+      selected:ans,
+      correct:currentQuestion.correct,
+      explanation:currentQuestion.explanation,
+      domain:currentQuestion.domain
+    });
+    $("feedbackOut").innerHTML="<strong>Not quite.</strong><br>That answer may sound possible, but it is not the best first move. Try again.";
+  }
+}
+
+function nextQuestion(){
+  currentIndex++;
+  if(currentIndex>=order.length){endGame();}
+  else{renderQuestion();}
+}
+
+function endGame(){
+  clearInterval(timerId);
+  const elapsed=Date.now()-startTime;
+  const accuracy=attempts?Math.round((score/attempts)*100):0;
+  $("gamePanel").classList.add("hidden");
+  $("summaryPanel").classList.remove("hidden");
+  $("finalScore").textContent=`${score}/${order.length}`;
+  $("finalAccuracy").textContent=`${accuracy}%`;
+  $("finalAttempts").textContent=attempts;
+  $("finalTime").textContent=formatTime(elapsed);
+
+  $("missedList").innerHTML=missed.length
+    ? missed.map(m=>`<div class="missed-item"><strong>${m.domain}</strong><br>${m.question}<br><strong>Correct call:</strong> ${m.correct}<br><em>${m.explanation}</em></div>`).join("")
+    : `<div class="missed-item"><strong>Clean install.</strong><br>No missed reps recorded.</div>`;
+
+  logResult({
+    game:"Install 3 - First Best Move",
+    player,
+    score,
+    total:order.length,
+    attempts,
+    accuracy,
+    elapsedSeconds:Math.round(elapsed/1000),
+    missedCount:missed.length,
+    timestamp:new Date().toISOString()
+  });
+}
+
+function logResult(payload){
+  if(!SCRIPT_URL || SCRIPT_URL.includes("PASTE_YOUR")){
+    console.warn("Apps Script URL not set.",payload);
+    return;
+  }
+  fetch(SCRIPT_URL,{
+    method:"POST",
+    mode:"no-cors",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(payload)
+  }).catch(err=>console.warn("Logging failed",err));
+}
+
+function resetGame(){
+  clearInterval(timerId);
+  $("gamePanel").classList.add("hidden");
+  $("summaryPanel").classList.add("hidden");
+  $("nameScreen").classList.remove("hidden");
+  $("studentName").focus();
+}
+
+$("startBtn").addEventListener("click",startGame);
+$("studentName").addEventListener("keydown",e=>{if(e.key==="Enter")startGame();});
+$("resetBtn").addEventListener("click",resetGame);
+$("playAgainBtn").addEventListener("click",startGame);
+</script>
+</body>
+</html>
