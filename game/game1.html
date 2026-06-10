@@ -4,29 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Install 1 - Know the Rules</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="../styles.css" />
 </head>
 <body>
   <main class="game-shell">
     <div class="topbar">
-      <div class="brand">
-        <div class="logo">043</div>
-        <div>
-          <div class="pill">INSTALL 1</div>
-          <h2>Know the Rules</h2>
-        </div>
-      </div>
-      <div class="top-actions">
-        <a class="button-link" href="index.html">← Hub</a>
-        <button class="danger" id="resetBtn" type="button">Reset</button>
-      </div>
+      <div class="brand"><div class="logo">043</div><div><div class="pill">INSTALL 1</div><h2>Know the Rules</h2></div></div>
+      <div class="top-actions"><a class="button-link" href="../index.html">← Hub</a><button class="danger" id="resetBtn" type="button">Reset</button></div>
     </div>
 
     <section id="nameScreen" class="name-screen">
       <div class="name-card">
-        <div class="badge">NICK'S PLAYBOOK</div>
+        <div class="badge">THE 043 PLAYBOOK</div>
         <h1 style="font-size:52px">Game 1</h1>
-        <p class="lead">The goal is not memorizing words. The goal is recognizing the formation and making the correct special education call.</p>
+        <p class="lead">Recognize the scenario. Make the best special education call.</p>
         <label for="studentName">Player Name</label>
         <input id="studentName" placeholder="Enter name" autocomplete="name" />
         <button class="primary" id="startBtn" type="button" style="margin-top:18px;width:100%">Start Install</button>
@@ -36,17 +27,16 @@
     <section id="gamePanel" class="game-panel hidden">
       <div class="score-row">
         <div class="score-box"><span>PLAYER</span><strong id="playerOut">—</strong></div>
-        <div class="score-box"><span>QUESTION</span><strong id="qNum">1/25</strong></div>
+        <div class="score-box"><span>QUESTION</span><strong id="qNum">1/10</strong></div>
         <div class="score-box"><span>SCORE</span><strong id="scoreOut">0</strong></div>
         <div class="score-box"><span>ATTEMPTS</span><strong id="attemptsOut">0</strong></div>
         <div class="score-box"><span>TIME</span><strong id="timeOut">0:00</strong></div>
       </div>
-
       <div class="question-card">
         <div class="domain" id="domainOut">DOMAIN</div>
         <div class="question" id="questionOut">Question text</div>
         <div class="answers" id="answersOut"></div>
-        <div class="feedback" id="feedbackOut">Choose the best answer. After a correct answer, the explanation stays for 5 seconds before the next rep.</div>
+        <div class="feedback" id="feedbackOut">Choose the best answer. Correct-answer explanation stays for 5 seconds before the next rep.</div>
       </div>
     </section>
 
@@ -66,370 +56,33 @@
   </main>
 
 <script>
-/*
-  GITHUB SETUP:
-  1. Upload index.html, game1.html, styles.css to your GitHub Pages repo.
-  2. Deploy Code.gs as a Google Apps Script web app.
-  3. Replace the URL below with your Apps Script Web App URL ending in /exec.
-*/
 const SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
-
 const EXPLANATION_DELAY_MS = 5000;
-
 const BANK = [
-  {
-    domain:"Domain IV - Foundations / Professional Practice",
-    question:"A parent asks to see their child's educational records. Which law is most directly connected to protecting access and privacy of student records?",
-    answers:["FERPA","IDEA Child Find","Section 504","LRE"],
-    correct:"FERPA",
-    explanation:"FERPA is the student records law. On test questions, records/privacy usually points to FERPA."
-  },
-  {
-    domain:"Domain IV - Foundations / Professional Practice",
-    question:"A student with a disability should be educated with nondisabled peers to the maximum extent appropriate. Which principle is this?",
-    answers:["LRE","FBA","FERPA","Due process"],
-    correct:"LRE",
-    explanation:"LRE means least restrictive environment. The test clue is placement with nondisabled peers as much as appropriate."
-  },
-  {
-    domain:"Domain IV - Foundations / Professional Practice",
-    question:"A student has a disability that substantially limits learning but does not qualify for an IEP. Which plan may provide access supports?",
-    answers:["Section 504 plan","BIP only","FBA only","FERPA notice"],
-    correct:"Section 504 plan",
-    explanation:"Section 504 is about access and nondiscrimination. A student can receive accommodations without being IDEA-eligible."
-  },
-  {
-    domain:"Domain II - Assessment / Program Planning",
-    question:"A teacher suspects a student may have a disability. What is the BEST first formal step?",
-    answers:["Follow referral/evaluation procedures and involve the family","Write an IEP immediately","Change the student's grade level placement","Remove the student from general education"],
-    correct:"Follow referral/evaluation procedures and involve the family",
-    explanation:"Before an IEP, the school needs proper referral and evaluation procedures with parent involvement."
-  },
-  {
-    domain:"Domain II - Assessment / Program Planning",
-    question:"Which document determines whether a student is eligible for special education services after evaluation data are reviewed?",
-    answers:["ETR","Daily lesson plan","Grade report","Seating chart"],
-    correct:"ETR",
-    explanation:"In Ohio, the Evaluation Team Report, or ETR, summarizes evaluation data and eligibility decisions."
-  },
-  {
-    domain:"Domain II - Assessment / Program Planning",
-    question:"Which document lists measurable annual goals, services, accommodations, and placement for a student receiving special education?",
-    answers:["IEP","FERPA file","Discipline referral","Universal screening report"],
-    correct:"IEP",
-    explanation:"The IEP is the individualized education program. Goals, services, accommodations, and placement live there."
-  },
-  {
-    domain:"Domain III - Instruction / Learning Environment",
-    question:"A student is not making progress on an IEP goal. What should the intervention specialist do FIRST?",
-    answers:["Review progress-monitoring data and adjust instruction or supports","Wait until the annual review","Lower expectations immediately","Stop collecting data"],
-    correct:"Review progress-monitoring data and adjust instruction or supports",
-    explanation:"The test rewards data-based decision making. First look at progress data, then adjust instruction/supports."
-  },
-  {
-    domain:"Domain III - Instruction / Learning Environment",
-    question:"A student repeatedly leaves his seat during independent work. What is the BEST initial classroom response?",
-    answers:["Teach and reinforce a clear replacement behavior","Send the student home","Ignore all movement for the semester","Remove all academic tasks"],
-    correct:"Teach and reinforce a clear replacement behavior",
-    explanation:"Positive behavioral supports focus on teaching what to do instead, not just punishing what not to do."
-  },
-  {
-    domain:"Domain III - Instruction / Learning Environment",
-    question:"A student becomes anxious when the schedule changes. Which support is most appropriate?",
-    answers:["Visual schedule and advance warning of changes","Longer homework assignments","Public correction in front of peers","Immediate suspension"],
-    correct:"Visual schedule and advance warning of changes",
-    explanation:"Predictability supports many students, especially students with autism or anxiety-related needs."
-  },
-  {
-    domain:"Domain III - Instruction / Learning Environment",
-    question:"A student can decode words but struggles to understand what was read. Which skill area needs the most support?",
-    answers:["Reading comprehension","Phonemic awareness only","Gross motor development","Handwriting fluency only"],
-    correct:"Reading comprehension",
-    explanation:"Decoding is word reading. Understanding meaning points to comprehension."
-  },
-  {
-    domain:"Domain I - Students with Disabilities",
-    question:"A student has average intelligence but significant difficulty with decoding, spelling, and reading fluency. Which disability area is most strongly suggested?",
-    answers:["Specific learning disability","Orthopedic impairment","Visual impairment","Traumatic brain injury"],
-    correct:"Specific learning disability",
-    explanation:"Average ability with significant academic skill difficulty, especially reading, often points to a specific learning disability."
-  },
-  {
-    domain:"Domain I - Students with Disabilities",
-    question:"A student has difficulty with social communication, prefers routines, and reacts strongly to unexpected changes. Which disability category is most associated with these clues?",
-    answers:["Autism spectrum disorder","Specific learning disability","Hearing impairment","Multiple disabilities only"],
-    correct:"Autism spectrum disorder",
-    explanation:"Social communication differences plus restricted/repetitive routines are classic autism-related clues."
-  },
-  {
-    domain:"Domain IV - Foundations / Professional Practice",
-    question:"Which federal law specifically guarantees eligible students with disabilities a free appropriate public education through special education services?",
-    answers:["IDEA","FERPA","Copyright Act","Title IX only"],
-    correct:"IDEA",
-    explanation:"IDEA is the special education law tied to FAPE, IEPs, eligibility, and procedural safeguards."
-  },
-  {
-    domain:"Domain IV - Foundations / Professional Practice",
-    question:"A school must provide ramps and accessible entrances so students with mobility needs can enter classrooms. This is most directly about:",
-    answers:["Access and nondiscrimination","Curriculum compacting","Phonological awareness","Summative grading"],
-    correct:"Access and nondiscrimination",
-    explanation:"Physical access is a key ADA/Section 504 idea: students with disabilities must have equal access."
-  },
-  {
-    domain:"Domain II - Assessment / Program Planning",
-    question:"Which assessment approach is used frequently during instruction to check progress and guide next teaching steps?",
-    answers:["Formative assessment","One-time final exam only","Norming sample","Age-equivalent score"],
-    correct:"Formative assessment",
-    explanation:"Formative assessment happens during learning and helps teachers adjust instruction."
-  },
-  {
-    domain:"Domain II - Assessment / Program Planning",
-    question:"A teacher wants to know whether an intervention is working over several weeks. Which tool is most useful?",
-    answers:["Progress monitoring data","A single attendance report","A seating chart","A parent signature page only"],
-    correct:"Progress monitoring data",
-    explanation:"Progress monitoring tracks performance over time. It tells whether instruction/intervention is working."
-  },
-  {
-    domain:"Domain III - Instruction / Learning Environment",
-    question:"A student struggles to remember multi-step directions. Which support is BEST?",
-    answers:["Break directions into smaller steps and provide a visual checklist","Give faster oral directions","Remove all support immediately","Increase punishment for forgetting"],
-    correct:"Break directions into smaller steps and provide a visual checklist",
-    explanation:"Chunking plus visual support reduces memory load and builds independence."
-  },
-  {
-    domain:"Domain III - Instruction / Learning Environment",
-    question:"A student uses a communication device to answer questions. What should the teacher do?",
-    answers:["Provide wait time and include the student in classroom discussion","Answer for the student to save time","Avoid calling on the student","Require speech only"],
-    correct:"Provide wait time and include the student in classroom discussion",
-    explanation:"AAC supports communication. The teacher should include the student and allow enough response time."
-  },
-  {
-    domain:"Domain IV - Foundations / Professional Practice",
-    question:"A general education teacher asks for specific disability information about a student not in her class. What is the BEST response?",
-    answers:["Protect confidentiality and share only with staff who have legitimate educational interest","Share the full file with everyone","Post the information in the teachers' lounge","Tell several students to explain it"],
-    correct:"Protect confidentiality and share only with staff who have legitimate educational interest",
-    explanation:"Confidentiality matters. Share student information only with appropriate school personnel who need it."
-  },
-  {
-    domain:"Domain III - Instruction / Learning Environment",
-    question:"A student's challenging behavior continues. The team wants to identify the purpose the behavior serves. What should be conducted?",
-    answers:["Functional Behavior Assessment","Final exam","Vision screening only","Transition survey only"],
-    correct:"Functional Behavior Assessment",
-    explanation:"An FBA looks for the function of behavior: escape, attention, access to something, or sensory needs."
-  },
-  {
-    domain:"Domain III - Instruction / Learning Environment",
-    question:"After an FBA identifies why a behavior occurs, what plan is developed to teach replacement behavior and supports?",
-    answers:["Behavior Intervention Plan","ETR only","Report card","Lunch schedule"],
-    correct:"Behavior Intervention Plan",
-    explanation:"A BIP uses FBA information to prevent problem behavior, teach replacement skills, and reinforce appropriate behavior."
-  },
-  {
-    domain:"Domain II - Assessment / Program Planning",
-    question:"Which IEP goal is written best?",
-    answers:["Given a grade-level passage, the student will identify the main idea with 80% accuracy on 4 of 5 trials.","The student will get better at reading.","The student will try harder in class.","The student will enjoy school more."],
-    correct:"Given a grade-level passage, the student will identify the main idea with 80% accuracy on 4 of 5 trials.",
-    explanation:"Good IEP goals are measurable. Look for condition, behavior, criterion, and progress measurement."
-  },
-  {
-    domain:"Domain IV - Foundations / Professional Practice",
-    question:"A parent disagrees with the school's evaluation results. Which concept is most connected to the parent's right to challenge decisions?",
-    answers:["Procedural safeguards and due process","Daily bell work","Extra credit","A seating preference"],
-    correct:"Procedural safeguards and due process",
-    explanation:"IDEA gives parents procedural safeguards, including ways to challenge evaluation, eligibility, placement, or services."
-  },
-  {
-    domain:"Domain III - Instruction / Learning Environment",
-    question:"A student needs the same content but with audio text and extended time. This is best described as:",
-    answers:["Accommodation","Modification","Removal from curriculum","Grade retention"],
-    correct:"Accommodation",
-    explanation:"An accommodation changes access, not the learning expectation. The student is still working on the same content."
-  },
-  {
-    domain:"Domain III - Instruction / Learning Environment",
-    question:"A student is assigned a substantially simplified curriculum with different learning expectations from peers. This is best described as:",
-    answers:["Modification","Accommodation","Universal screening","Confidentiality"],
-    correct:"Modification",
-    explanation:"A modification changes what the student is expected to learn or demonstrate."
-  }
+{domain:"Domain IV - Law",question:"A parent asks to see their child's educational records. Which law is most directly connected to protecting access and privacy of student records?",answers:["FERPA","IDEA Child Find","Section 504","LRE"],correct:"FERPA",explanation:"FERPA is the student records law. Records and privacy usually point to FERPA."},
+{domain:"Domain IV - Law",question:"A student with a disability should be educated with nondisabled peers to the maximum extent appropriate. Which principle is this?",answers:["LRE","FBA","FERPA","Due process"],correct:"LRE",explanation:"LRE means least restrictive environment: placement with nondisabled peers as much as appropriate."},
+{domain:"Domain IV - Law",question:"A student has a disability that substantially limits learning but does not qualify for an IEP. Which plan may provide access supports?",answers:["Section 504 plan","BIP only","FBA only","FERPA notice"],correct:"Section 504 plan",explanation:"Section 504 is about access and nondiscrimination. A student can receive accommodations without being IDEA-eligible."},
+{domain:"Domain II - Evaluation",question:"A teacher suspects a student may have a disability. What is the BEST first formal step?",answers:["Follow referral/evaluation procedures and involve the family","Write an IEP immediately","Change the student's grade level placement","Remove the student from general education"],correct:"Follow referral/evaluation procedures and involve the family",explanation:"Before an IEP, the school needs proper referral and evaluation procedures with parent involvement."},
+{domain:"Domain II - Evaluation",question:"Which document determines whether a student is eligible for special education services after evaluation data are reviewed?",answers:["ETR","Daily lesson plan","Grade report","Seating chart"],correct:"ETR",explanation:"In Ohio, the ETR summarizes evaluation data and eligibility decisions."},
+{domain:"Domain II - IEP",question:"Which document lists measurable annual goals, services, accommodations, and placement for a student receiving special education?",answers:["IEP","FERPA file","Discipline referral","Universal screening report"],correct:"IEP",explanation:"The IEP contains goals, services, accommodations, and placement."},
+{domain:"Domain III - Instruction",question:"A student is not making progress on an IEP goal. What should the intervention specialist do FIRST?",answers:["Review progress-monitoring data and adjust instruction or supports","Wait until the annual review","Lower expectations immediately","Stop collecting data"],correct:"Review progress-monitoring data and adjust instruction or supports",explanation:"The OAE rewards data-based decision making. First review progress data, then adjust."},
+{domain:"Domain III - Behavior",question:"A student repeatedly leaves his seat during independent work. What is the BEST initial classroom response?",answers:["Teach and reinforce a clear replacement behavior","Send the student home","Ignore all movement for the semester","Remove all academic tasks"],correct:"Teach and reinforce a clear replacement behavior",explanation:"Positive behavior supports teach what to do instead of only punishing the behavior."},
+{domain:"Domain I - Disability Clues",question:"A student has average intelligence but significant difficulty with decoding, spelling, and reading fluency. Which disability area is most strongly suggested?",answers:["Specific learning disability","Orthopedic impairment","Visual impairment","Traumatic brain injury"],correct:"Specific learning disability",explanation:"Average ability with significant academic skill difficulty, especially reading, often points to SLD."},
+{domain:"Domain III - Access",question:"A student needs the same content but with audio text and extended time. This is best described as:",answers:["Accommodation","Modification","Removal from curriculum","Grade retention"],correct:"Accommodation",explanation:"An accommodation changes access, not the learning expectation."}
 ];
-
-let player = "";
-let order = [];
-let currentIndex = 0;
-let score = 0;
-let attempts = 0;
-let startTime = null;
-let timerId = null;
-let locked = false;
-let missed = [];
-let currentQuestion = null;
-
-const $ = id => document.getElementById(id);
-
-function shuffle(arr){
-  const copy = [...arr];
-  for(let i = copy.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-}
-
-function formatTime(ms){
-  const total = Math.floor(ms / 1000);
-  const min = Math.floor(total / 60);
-  const sec = total % 60;
-  return `${min}:${String(sec).padStart(2,"0")}`;
-}
-
-function startTimer(){
-  startTime = Date.now();
-  timerId = setInterval(() => {
-    $("timeOut").textContent = formatTime(Date.now() - startTime);
-  }, 500);
-}
-
-function startGame(){
-  const name = $("studentName").value.trim();
-  if(!name){
-    $("studentName").focus();
-    return;
-  }
-  player = name;
-  order = shuffle(BANK).slice(0, BANK.length);
-  currentIndex = 0;
-  score = 0;
-  attempts = 0;
-  missed = [];
-  locked = false;
-  $("playerOut").textContent = player;
-  $("nameScreen").classList.add("hidden");
-  $("summaryPanel").classList.add("hidden");
-  $("gamePanel").classList.remove("hidden");
-  clearInterval(timerId);
-  startTimer();
-  renderQuestion();
-}
-
-function renderQuestion(){
-  locked = false;
-  currentQuestion = order[currentIndex];
-  $("qNum").textContent = `${currentIndex + 1}/${order.length}`;
-  $("scoreOut").textContent = score;
-  $("attemptsOut").textContent = attempts;
-  $("domainOut").textContent = currentQuestion.domain;
-  $("questionOut").textContent = currentQuestion.question;
-  $("feedbackOut").innerHTML = "Choose the best answer. Read every choice. The OAE often has two answers that sound reasonable.";
-  const answers = shuffle(currentQuestion.answers);
-  $("answersOut").innerHTML = "";
-  answers.forEach(ans => {
-    const btn = document.createElement("button");
-    btn.className = "answer-btn";
-    btn.type = "button";
-    btn.textContent = ans;
-    btn.addEventListener("click", () => chooseAnswer(btn, ans));
-    $("answersOut").appendChild(btn);
-  });
-}
-
-function chooseAnswer(btn, ans){
-  if(locked) return;
-  attempts++;
-  $("attemptsOut").textContent = attempts;
-
-  const correct = ans === currentQuestion.correct;
-  if(correct){
-    locked = true;
-    score++;
-    $("scoreOut").textContent = score;
-    btn.classList.add("correct");
-    $("feedbackOut").innerHTML = `<strong>Correct.</strong><br>${currentQuestion.explanation}<br><br><em>Next rep in 5 seconds...</em>`;
-    Array.from(document.querySelectorAll(".answer-btn")).forEach(b => b.disabled = true);
-    setTimeout(nextQuestion, EXPLANATION_DELAY_MS);
-  } else {
-    btn.classList.add("wrong");
-    btn.disabled = true;
-    missed.push({
-      question: currentQuestion.question,
-      selected: ans,
-      correct: currentQuestion.correct,
-      explanation: currentQuestion.explanation,
-      domain: currentQuestion.domain
-    });
-    $("feedbackOut").innerHTML = `<strong>Not quite.</strong><br>That answer sounds possible, but it is not the best OAE answer. Try again. Look for the legal/procedural clue.`;
-  }
-}
-
-function nextQuestion(){
-  currentIndex++;
-  if(currentIndex >= order.length){
-    endGame();
-  } else {
-    renderQuestion();
-  }
-}
-
-function endGame(){
-  clearInterval(timerId);
-  const elapsed = Date.now() - startTime;
-  const accuracy = attempts ? Math.round((score / attempts) * 100) : 0;
-  $("gamePanel").classList.add("hidden");
-  $("summaryPanel").classList.remove("hidden");
-  $("finalScore").textContent = `${score}/${order.length}`;
-  $("finalAccuracy").textContent = `${accuracy}%`;
-  $("finalAttempts").textContent = attempts;
-  $("finalTime").textContent = formatTime(elapsed);
-
-  const uniqueMissed = missed.slice(-12);
-  $("missedList").innerHTML = uniqueMissed.length
-    ? uniqueMissed.map(m => `
-      <div class="missed-item">
-        <strong>${m.domain}</strong><br>
-        ${m.question}<br>
-        <strong>Correct call:</strong> ${m.correct}<br>
-        <em>${m.explanation}</em>
-      </div>`).join("")
-    : `<div class="missed-item"><strong>Clean install.</strong><br>No missed reps recorded.</div>`;
-
-  logResult({
-    game:"Install 1 - Know the Rules",
-    player,
-    score,
-    total: order.length,
-    attempts,
-    accuracy,
-    elapsedSeconds: Math.round(elapsed / 1000),
-    missedCount: missed.length,
-    timestamp: new Date().toISOString()
-  });
-}
-
-function logResult(payload){
-  if(!SCRIPT_URL || SCRIPT_URL.includes("PASTE_YOUR")){
-    console.warn("Apps Script URL not set. Result not logged.", payload);
-    return;
-  }
-  fetch(SCRIPT_URL, {
-    method:"POST",
-    mode:"no-cors",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(payload)
-  }).catch(err => console.warn("Logging failed", err));
-}
-
-function resetGame(){
-  clearInterval(timerId);
-  $("gamePanel").classList.add("hidden");
-  $("summaryPanel").classList.add("hidden");
-  $("nameScreen").classList.remove("hidden");
-  $("studentName").focus();
-}
-
-$("startBtn").addEventListener("click", startGame);
-$("studentName").addEventListener("keydown", e => { if(e.key === "Enter") startGame(); });
-$("resetBtn").addEventListener("click", resetGame);
-$("playAgainBtn").addEventListener("click", startGame);
+let player="",order=[],currentIndex=0,score=0,attempts=0,startTime=null,timerId=null,locked=false,missed=[],currentQuestion=null;
+const $=id=>document.getElementById(id);
+function shuffle(arr){const c=[...arr];for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]];}return c;}
+function formatTime(ms){const t=Math.floor(ms/1000),m=Math.floor(t/60),s=t%60;return `${m}:${String(s).padStart(2,"0")}`;}
+function startTimer(){startTime=Date.now();timerId=setInterval(()=>$("timeOut").textContent=formatTime(Date.now()-startTime),500);}
+function startGame(){const name=$("studentName").value.trim();if(!name){$("studentName").focus();return;}player=name;order=shuffle(BANK);currentIndex=0;score=0;attempts=0;missed=[];locked=false;$("playerOut").textContent=player;$("nameScreen").classList.add("hidden");$("summaryPanel").classList.add("hidden");$("gamePanel").classList.remove("hidden");clearInterval(timerId);startTimer();renderQuestion();}
+function renderQuestion(){locked=false;currentQuestion=order[currentIndex];$("qNum").textContent=`${currentIndex+1}/${order.length}`;$("scoreOut").textContent=score;$("attemptsOut").textContent=attempts;$("domainOut").textContent=currentQuestion.domain;$("questionOut").textContent=currentQuestion.question;$("feedbackOut").innerHTML="Choose the best answer. Read every choice. The OAE often has two answers that sound reasonable.";$("answersOut").innerHTML="";shuffle(currentQuestion.answers).forEach(ans=>{const btn=document.createElement("button");btn.className="answer-btn";btn.type="button";btn.textContent=ans;btn.addEventListener("click",()=>chooseAnswer(btn,ans));$("answersOut").appendChild(btn);});}
+function chooseAnswer(btn,ans){if(locked)return;attempts++;$("attemptsOut").textContent=attempts;if(ans===currentQuestion.correct){locked=true;score++;$("scoreOut").textContent=score;btn.classList.add("correct");$("feedbackOut").innerHTML=`<strong>Correct.</strong><br>${currentQuestion.explanation}<br><br><em>Next rep in 5 seconds...</em>`;document.querySelectorAll(".answer-btn").forEach(b=>b.disabled=true);setTimeout(nextQuestion,EXPLANATION_DELAY_MS);}else{btn.classList.add("wrong");btn.disabled=true;missed.push({question:currentQuestion.question,selected:ans,correct:currentQuestion.correct,explanation:currentQuestion.explanation,domain:currentQuestion.domain});$("feedbackOut").innerHTML="<strong>Not quite.</strong><br>That answer sounds possible, but it is not the best OAE answer. Try again. Look for the legal or procedural clue.";}}
+function nextQuestion(){currentIndex++;currentIndex>=order.length?endGame():renderQuestion();}
+function endGame(){clearInterval(timerId);const elapsed=Date.now()-startTime,accuracy=attempts?Math.round((score/attempts)*100):0;$("gamePanel").classList.add("hidden");$("summaryPanel").classList.remove("hidden");$("finalScore").textContent=`${score}/${order.length}`;$("finalAccuracy").textContent=`${accuracy}%`;$("finalAttempts").textContent=attempts;$("finalTime").textContent=formatTime(elapsed);$("missedList").innerHTML=missed.length?missed.map(m=>`<div class="missed-item"><strong>${m.domain}</strong><br>${m.question}<br><strong>Correct call:</strong> ${m.correct}<br><em>${m.explanation}</em></div>`).join(""):`<div class="missed-item"><strong>Clean install.</strong><br>No missed reps recorded.</div>`;logResult({game:"Install 1 - Know the Rules",player,score,total:order.length,attempts,accuracy,elapsedSeconds:Math.round(elapsed/1000),missedCount:missed.length,timestamp:new Date().toISOString()});}
+function logResult(payload){if(!SCRIPT_URL||SCRIPT_URL.includes("PASTE_YOUR")){console.warn("Apps Script URL not set.",payload);return;}fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}).catch(err=>console.warn("Logging failed",err));}
+function resetGame(){clearInterval(timerId);$("gamePanel").classList.add("hidden");$("summaryPanel").classList.add("hidden");$("nameScreen").classList.remove("hidden");$("studentName").focus();}
+$("startBtn").addEventListener("click",startGame);$("studentName").addEventListener("keydown",e=>{if(e.key==="Enter")startGame();});$("resetBtn").addEventListener("click",resetGame);$("playAgainBtn").addEventListener("click",startGame);
 </script>
 </body>
 </html>
