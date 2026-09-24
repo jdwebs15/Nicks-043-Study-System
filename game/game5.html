@@ -69,334 +69,82 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMYDRlpGHjGNUe_Eil7tJzWJCGz-W_zzz5JL9rI54966IS1mmqtBDn1PtWXp3Uo9Ye/exec";
 const EXPLANATION_DELAY_MS = 5000;
 
-const BANK = [
-  {
-    domain:"Domain II - Evaluation",
-    question:"Before a student can receive special education services, what must the school determine?",
-    answers:["Eligibility","Report card grade","Locker assignment","Class rank"],
-    correct:"Eligibility",
-    explanation:"The IEP process begins with evaluation and eligibility. A student must qualify before special education services are provided."
-  },
-  {
-    domain:"Domain II - ETR",
-    question:"Which document summarizes evaluation results and helps determine whether a student qualifies for special education?",
-    answers:["ETR","IEP only","Lesson plan","Attendance sheet"],
-    correct:"ETR",
-    explanation:"In Ohio, the ETR summarizes evaluation data and eligibility decisions."
-  },
-  {
-    domain:"Domain II - IEP",
-    question:"Which document lists annual goals, services, accommodations, and placement?",
-    answers:["IEP","ETR only","Grade book","Behavior referral"],
-    correct:"IEP",
-    explanation:"The IEP is the plan for specially designed instruction, services, accommodations, goals, and placement."
-  },
-  {
-    domain:"Domain II - Present Levels",
-    question:"What part of the IEP describes the student's current academic and functional performance?",
-    answers:["Present levels","Lunch schedule","Class rank","Bus route"],
-    correct:"Present levels",
-    explanation:"Present levels describe where the student is now. Goals and services should connect to those needs."
-  },
-  {
-    domain:"Domain II - Annual Goals",
-    question:"Which IEP goal is best written?",
-    answers:["The student will solve two-step equations with 80% accuracy","The student will improve math","The student will try harder","The student will like school"],
-    correct:"The student will solve two-step equations with 80% accuracy",
-    explanation:"Measurable goals include a clear skill and a criterion for success."
-  },
-  {
-    domain:"Domain II - Progress Monitoring",
-    question:"How does a team know whether a student is making progress toward an IEP goal?",
-    answers:["Progress monitoring","Locker checks","Lunch count","Final grade only"],
-    correct:"Progress monitoring",
-    explanation:"Progress monitoring tracks growth toward goals over time."
-  },
-  {
-    domain:"Domain III - Accommodations",
-    question:"A student receives extended time but completes the same grade-level assessment. This is a:",
-    answers:["Accommodation","Modification","New disability category","Placement change"],
-    correct:"Accommodation",
-    explanation:"An accommodation changes access, not the learning expectation."
-  },
-  {
-    domain:"Domain III - Modifications",
-    question:"A student is assigned a different, simplified curriculum than classmates. This is a:",
-    answers:["Modification","Accommodation","Universal screening","Due process"],
-    correct:"Modification",
-    explanation:"A modification changes what the student is expected to learn or demonstrate."
-  },
-  {
-    domain:"Domain IV - LRE",
-    question:"IEP placement decisions should begin by considering education with nondisabled peers when appropriate. This reflects:",
-    answers:["LRE","FERPA","Summative testing","Retention"],
-    correct:"LRE",
-    explanation:"LRE means students should be educated with nondisabled peers to the maximum extent appropriate."
-  },
-  {
-    domain:"Domain II - Services",
-    question:"Speech therapy, occupational therapy, and transportation may appear in an IEP as:",
-    answers:["Related services","Report card comments","Classroom rules","State standards"],
-    correct:"Related services",
-    explanation:"Related services help a student benefit from special education."
-  },
-  {
-    domain:"Domain II - Team Members",
-    question:"Who should be involved in developing a student's IEP?",
-    answers:["The IEP team","Only the student","Only the principal","Only one teacher"],
-    correct:"The IEP team",
-    explanation:"IEPs are developed by a team, including parent participation and required school personnel."
-  },
-  {
-    domain:"Domain IV - Parent Participation",
-    question:"Parents are invited to IEP meetings because they have the right to:",
-    answers:["Participate in decisions","Choose every grade","Remove all testing","Hire teachers"],
-    correct:"Participate in decisions",
-    explanation:"Parent participation is a key part of IDEA and the IEP process."
-  },
-  {
-    domain:"Domain II - Implementation",
-    question:"An accommodation is listed in the IEP. What must school staff do?",
-    answers:["Provide it as written","Use it only sometimes","Wait for the next test","Ignore it if busy"],
-    correct:"Provide it as written",
-    explanation:"The IEP is a legal plan. Listed accommodations and services must be implemented."
-  },
-  {
-    domain:"Domain II - Review",
-    question:"An IEP should be reviewed at least:",
-    answers:["Annually","Every ten years","Only in kindergarten","Only after graduation"],
-    correct:"Annually",
-    explanation:"The IEP must be reviewed at least once per year."
-  },
-  {
-    domain:"Domain II - Reevaluation",
-    question:"A reevaluation is used to determine continued eligibility and current needs. It generally occurs at least:",
-    answers:["Every three years","Every month","Every week","Every grading period"],
-    correct:"Every three years",
-    explanation:"Reevaluation commonly occurs at least every three years, unless the team and parent agree otherwise."
-  },
-  {
-    domain:"Domain II - Data",
-    question:"A student is missing an IEP goal. What should the team review first?",
-    answers:["Progress data","Hall passes","Locker number","Lunch menu"],
-    correct:"Progress data",
-    explanation:"Data tells the team whether instruction, services, or supports need adjustment."
-  },
-  {
-    domain:"Domain II - Services",
-    question:"Specially designed instruction means instruction is adapted to meet the student's:",
-    answers:["Unique needs","Favorite color","Sports schedule","Locker location"],
-    correct:"Unique needs",
-    explanation:"Special education is specially designed instruction based on the student's unique disability-related needs."
-  },
-  {
-    domain:"Domain II - Placement",
-    question:"Placement should be based on the student's:",
-    answers:["IEP needs","Parent income","Teacher preference only","Classroom decorations"],
-    correct:"IEP needs",
-    explanation:"Placement is determined by the student's IEP needs, not convenience or labels alone."
-  },
-  {
-    domain:"Domain II - Eligibility",
-    question:"A disability label alone is enough for special education services.",
-    answers:["False","True","Only in high school","Only for reading"],
-    correct:"False",
-    explanation:"The disability must adversely affect educational performance and require specially designed instruction."
-  },
-  {
-    domain:"Domain II - Transition",
-    question:"For older students, the IEP should address post-school goals through:",
-    answers:["Transition planning","Locker cleanout","Field day","Lunch choice"],
-    correct:"Transition planning",
-    explanation:"Transition planning connects school services to post-school education, employment, and independent living goals."
-  },
-  {
-    domain:"Domain III - Assistive Technology",
-    question:"If technology helps a student access learning or communicate, it may be included in the IEP as:",
-    answers:["Assistive technology","A punishment","A grade change","A school rule"],
-    correct:"Assistive technology",
-    explanation:"Assistive technology can support access, communication, writing, reading, or independence."
-  },
-  {
-    domain:"Domain III - Behavior",
-    question:"If behavior interferes with learning, the IEP team should consider:",
-    answers:["Positive behavior supports","Ignoring all behavior","Removing all goals","Only detention"],
-    correct:"Positive behavior supports",
-    explanation:"IEP teams should consider positive behavioral interventions and supports when behavior affects learning."
-  },
-  {
-    domain:"Domain II - Prior Written Notice",
-    question:"When a school proposes or refuses a major special education action, parents should receive:",
-    answers:["Prior written notice","A lunch pass","A report card only","A hall pass"],
-    correct:"Prior written notice",
-    explanation:"Prior written notice informs parents about proposed or refused special education actions."
-  },
-  {
-    domain:"Domain IV - Procedural Safeguards",
-    question:"Procedural safeguards explain parents' rights in the special education process. They are connected to:",
-    answers:["IDEA","Locker rules","Athletic policy","Dress code"],
-    correct:"IDEA",
-    explanation:"Procedural safeguards are parent rights under IDEA."
-  },
-  {
-    domain:"Domain II - IEP Alignment",
-    question:"IEP services should connect directly to the student's:",
-    answers:["Identified needs and goals","Favorite teacher","Bus number","Classroom theme"],
-    correct:"Identified needs and goals",
-    explanation:"IEP services should be based on evaluation data, present levels, needs, and measurable goals."
-  }
-];
+const BANK = [{"domain":"Domain II - Evaluation","question":"Before a student can receive special education services, what must the school determine?","answers":["Eligibility","Report card grade","Locker assignment","Class rank"],"correct":"Eligibility","explanation":"The IEP process begins with evaluation and eligibility. A student must qualify before special education services are provided."},{"domain":"Domain II - ETR","question":"Which document summarizes evaluation results and helps determine whether a student qualifies for special education?","answers":["ETR","IEP only","Lesson plan","Attendance sheet"],"correct":"ETR","explanation":"In Ohio, the ETR summarizes evaluation data and eligibility decisions."},{"domain":"Domain II - IEP","question":"Which document lists annual goals, services, accommodations, and placement?","answers":["IEP","ETR only","Grade book","Behavior referral"],"correct":"IEP","explanation":"The IEP is the plan for specially designed instruction, services, accommodations, goals, and placement."},{"domain":"Domain II - Present Levels","question":"What part of the IEP describes the student's current academic and functional performance?","answers":["Present levels","Lunch schedule with the educational team before changing the plan","Class rank after reviewing the relevant student data","Bus route as part of the student's ongoing instructional program"],"correct":"Present levels","explanation":"Present levels describe where the student is now. Goals and services should connect to those needs."},{"domain":"Domain II - Annual Goals","question":"Which IEP goal is best written?","answers":["The student will solve two-step equations with 80% accuracy","The student will improve math","The student will try harder","The student will like school"],"correct":"The student will solve two-step equations with 80% accuracy","explanation":"Measurable goals include a clear skill and a criterion for success."},{"domain":"Domain II - Progress Monitoring","question":"How does a team know whether a student is making progress toward an IEP goal?","answers":["Progress monitoring","Locker checks","Lunch count as part of the student's ongoing instructional program","Final grade only"],"correct":"Progress monitoring","explanation":"Progress monitoring tracks growth toward goals over time."},{"domain":"Domain III - Accommodations","question":"A student receives extended time but completes the same grade-level assessment. This is a:","answers":["Accommodation","Modification","New disability category","Placement change"],"correct":"Accommodation","explanation":"An accommodation changes access, not the learning expectation."},{"domain":"Domain III - Modifications","question":"A student is assigned a different, simplified curriculum than classmates. This is a:","answers":["Modification","Accommodation","Universal screening","Due process after reviewing the relevant student data"],"correct":"Modification","explanation":"A modification changes what the student is expected to learn or demonstrate."},{"domain":"Domain IV - LRE","question":"IEP placement decisions should begin by considering education with nondisabled peers when appropriate. This reflects:","answers":["LRE","FERPA","Summative testing","Retention"],"correct":"LRE","explanation":"LRE means students should be educated with nondisabled peers to the maximum extent appropriate."},{"domain":"Domain II - Services","question":"Speech therapy, occupational therapy, and transportation may appear in an IEP as:","answers":["Related services","Report card comments","Classroom rules","State standards"],"correct":"Related services","explanation":"Related services help a student benefit from special education."},{"domain":"Domain II - Team Members","question":"Who should be involved in developing a student's IEP?","answers":["The IEP team","Only the student","Only the principal","Only one teacher"],"correct":"The IEP team","explanation":"IEPs are developed by a team, including parent participation and required school personnel."},{"domain":"Domain IV - Parent Participation","question":"Parents are invited to IEP meetings because they have the right to:","answers":["Participate in decisions","Choose every grade while monitoring how the student responds","Remove all testing based on the student's documented instructional needs","Hire teachers with the educational team before changing the plan"],"correct":"Participate in decisions","explanation":"Parent participation is a key part of IDEA and the IEP process."},{"domain":"Domain II - Implementation","question":"An accommodation is listed in the IEP. What must school staff do?","answers":["Provide it as written","Use it only sometimes","Wait for the next test","Ignore it if busy"],"correct":"Provide it as written","explanation":"The IEP is a legal plan. Listed accommodations and services must be implemented."},{"domain":"Domain II - Review","question":"An IEP should be reviewed at least:","answers":["Annually","Every ten years","Only in kindergarten","Only after graduation"],"correct":"Annually","explanation":"The IEP must be reviewed at least once per year."},{"domain":"Domain II - Reevaluation","question":"A reevaluation is used to determine continued eligibility and current needs. It generally occurs at least:","answers":["Every three years","Every month","Every week after considering the current classroom evidence","Every grading period"],"correct":"Every three years","explanation":"Reevaluation commonly occurs at least every three years, unless the team and parent agree otherwise."},{"domain":"Domain II - Data","question":"A student is missing an IEP goal. What should the team review first?","answers":["Progress data","Hall passes based on the student's documented instructional needs","Locker number after considering the current classroom evidence","Lunch menu while monitoring how the student responds"],"correct":"Progress data","explanation":"Data tells the team whether instruction, services, or supports need adjustment."},{"domain":"Domain II - Services","question":"Specially designed instruction means instruction is adapted to meet the student's:","answers":["Unique needs","Favorite color","Sports schedule","Locker location"],"correct":"Unique needs","explanation":"Special education is specially designed instruction based on the student's unique disability-related needs."},{"domain":"Domain II - Placement","question":"Placement should be based on the student's:","answers":["IEP needs","Parent income","Teacher preference only","Classroom decorations"],"correct":"IEP needs","explanation":"Placement is determined by the student's IEP needs, not convenience or labels alone."},{"domain":"Domain II - Eligibility","question":"A disability label alone is enough for special education services.","answers":["False","True","Only in high school","Only for reading"],"correct":"False","explanation":"The disability must adversely affect educational performance and require specially designed instruction."},{"domain":"Domain II - Transition","question":"For older students, the IEP should address post-school goals through:","answers":["Transition planning","Locker cleanout as part of the student's ongoing instructional program","Field day based on the student's documented instructional needs","Lunch choice after considering the current classroom evidence"],"correct":"Transition planning","explanation":"Transition planning connects school services to post-school education, employment, and independent living goals."},{"domain":"Domain III - Assistive Technology","question":"If technology helps a student access learning or communicate, it may be included in the IEP as:","answers":["Assistive technology","A punishment","A grade change","A school rule"],"correct":"Assistive technology","explanation":"Assistive technology can support access, communication, writing, reading, or independence."},{"domain":"Domain III - Behavior","question":"If behavior interferes with learning, the IEP team should consider:","answers":["Positive behavior supports","Ignoring all behavior","Removing all goals","Only detention with the educational team before changing the plan"],"correct":"Positive behavior supports","explanation":"IEP teams should consider positive behavioral interventions and supports when behavior affects learning."},{"domain":"Domain II - Prior Written Notice","question":"When a school proposes or refuses a major special education action, parents should receive:","answers":["Prior written notice","A lunch pass while monitoring how the student responds","A report card only","A hall pass with the educational team before changing the plan"],"correct":"Prior written notice","explanation":"Prior written notice informs parents about proposed or refused special education actions."},{"domain":"Domain IV - Procedural Safeguards","question":"Procedural safeguards explain parents' rights in the special education process. They are connected to:","answers":["IDEA","Locker rules","Athletic policy","Dress code"],"correct":"IDEA","explanation":"Procedural safeguards are parent rights under IDEA."},{"domain":"Domain II - IEP Alignment","question":"IEP services should connect directly to the student's:","answers":["Identified needs and goals","Favorite teacher","Bus number","Classroom theme"],"correct":"Identified needs and goals","explanation":"IEP services should be based on evaluation data, present levels, needs, and measurable goals."}];
 
-let player="", order=[], currentIndex=0, score=0, attempts=0, startTime=null, timerId=null, locked=false, missed=[], currentQuestion=null;
-const $ = id => document.getElementById(id);
-
-function shuffle(arr){
-  const copy=[...arr];
-  for(let i=copy.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [copy[i],copy[j]]=[copy[j],copy[i]];
-  }
-  return copy;
-}
-
-function formatTime(ms){
-  const total=Math.floor(ms/1000);
-  const min=Math.floor(total/60);
-  const sec=total%60;
-  return `${min}:${String(sec).padStart(2,"0")}`;
-}
-
-function startTimer(){
-  startTime=Date.now();
-  timerId=setInterval(()=>{$("timeOut").textContent=formatTime(Date.now()-startTime);},500);
-}
+const $=id=>document.getElementById(id);
+function shuffle(a){const x=[...a];for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]];}return x;}
+let order=[],currentIndex=0,currentQuestion=null,score=0,attempts=0,startTime=0,timerId=null,missed=[],questionResults=[],currentWrong=[],currentAttempts=0,locked=false,player="";
 
 function startGame(){
-  const name=$("studentName").value.trim();
-  if(!name){$("studentName").focus();return;}
-  player=name;
-  order=shuffle(BANK);
-  currentIndex=0;
-  score=0;
-  attempts=0;
-  missed=[];
-  locked=false;
-  $("playerOut").textContent=player;
-  $("nameScreen").classList.add("hidden");
-  $("summaryPanel").classList.add("hidden");
-  $("gamePanel").classList.remove("hidden");
-  clearInterval(timerId);
-  startTimer();
-  renderQuestion();
+  player=$("studentName").value.trim();
+  if(!player){alert("Enter a player name first.");return;}
+  order=shuffle(BANK.map((_,i)=>i)); currentIndex=0; score=0; attempts=0; missed=[]; questionResults=[]; locked=false;
+  startTime=Date.now(); $("nameScreen").classList.add("hidden"); $("summaryPanel").classList.add("hidden"); $("gamePanel").classList.remove("hidden");
+  $("playerOut").textContent=player; clearInterval(timerId); timerId=setInterval(updateTime,1000); updateTime(); renderQuestion();
 }
-
+function updateTime(){const s=Math.floor((Date.now()-startTime)/1000);$("timeOut").textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;}
 function renderQuestion(){
-  locked=false;
-  currentQuestion=order[currentIndex];
+  locked=false; currentWrong=[]; currentAttempts=0; currentQuestion=BANK[order[currentIndex]];
   $("qNum").textContent=`${currentIndex+1}/${order.length}`;
-  $("scoreOut").textContent=score;
-  $("attemptsOut").textContent=attempts;
-  $("domainOut").textContent=currentQuestion.domain;
-  $("questionOut").textContent=currentQuestion.question;
-  $("feedbackOut").innerHTML="Choose the best IEP process answer. Look for evaluation, eligibility, goals, services, placement, and progress data.";
-  $("answersOut").innerHTML="";
+  $("scoreOut").textContent=score; $("attemptsOut").textContent=attempts;
+  $("domainOut").textContent=currentQuestion.domain; $("questionOut").textContent=currentQuestion.question;
+  $("feedbackOut").innerHTML="Choose the <strong>best</strong> answer. Your first response is recorded for game-film analysis; if you miss it, correct it before advancing.";
+  const box=$("answersOut"); box.innerHTML="";
   shuffle(currentQuestion.answers).forEach(ans=>{
-    const btn=document.createElement("button");
-    btn.className="answer-btn";
-    btn.type="button";
-    btn.textContent=ans;
-    btn.addEventListener("click",()=>chooseAnswer(btn,ans));
-    $("answersOut").appendChild(btn);
+    const btn=document.createElement("button"); btn.type="button"; btn.className="answer-btn"; btn.textContent=ans;
+    btn.onclick=()=>chooseAnswer(ans,btn); box.appendChild(btn);
   });
 }
-
-function chooseAnswer(btn,ans){
-  if(locked)return;
-  attempts++;
-  $("attemptsOut").textContent=attempts;
-
+function chooseAnswer(ans,btn){
+  if(locked||btn.disabled)return;
+  attempts++; currentAttempts++; $("attemptsOut").textContent=attempts;
+  const firstTry=currentAttempts===1;
   if(ans===currentQuestion.correct){
-    locked=true;
-    score++;
-    $("scoreOut").textContent=score;
-    btn.classList.add("correct");
-    $("feedbackOut").innerHTML=`<strong>Correct.</strong><br>${currentQuestion.explanation}<br><br><em>Next rep in 5 seconds...</em>`;
+    locked=true; score++; $("scoreOut").textContent=score; btn.classList.add("correct");
+    questionResults.push({domain:currentQuestion.domain,question:currentQuestion.question,correct:currentQuestion.correct,attemptsForQuestion:currentAttempts,firstTryCorrect:firstTry,wrongAnswers:[...currentWrong]});
     document.querySelectorAll(".answer-btn").forEach(b=>b.disabled=true);
+    $("feedbackOut").innerHTML=`<strong>Correct.</strong><br>${currentQuestion.explanation}<br><br><em>Next rep in 5 seconds...</em>`;
     setTimeout(nextQuestion,EXPLANATION_DELAY_MS);
   }else{
-    btn.classList.add("wrong");
-    btn.disabled=true;
-    missed.push({
-      question:currentQuestion.question,
-      selected:ans,
-      correct:currentQuestion.correct,
-      explanation:currentQuestion.explanation,
-      domain:currentQuestion.domain
-    });
-    $("feedbackOut").innerHTML="<strong>Not quite.</strong><br>Try again. Look for the IEP step or legal requirement in the question.";
+    btn.classList.add("wrong"); btn.disabled=true; currentWrong.push(ans);
+    missed.push({question:currentQuestion.question,selected:ans,correct:currentQuestion.correct,explanation:currentQuestion.explanation,domain:currentQuestion.domain});
+    const hint=currentAttempts===1
+      ? "Re-read the stem and identify what the question is actually asking you to decide. Eliminate choices that solve a different problem."
+      : "Compare the remaining choices by procedure, student need, and least-intrusive appropriate action. Do not choose by answer length.";
+    $("feedbackOut").innerHTML=`<strong>Not quite.</strong><br>${hint}<br><br><em>Your first-attempt result is already preserved. Correct the rep to continue.</em>`;
   }
 }
-
-function nextQuestion(){
-  currentIndex++;
-  if(currentIndex>=order.length){endGame();}
-  else{renderQuestion();}
-}
-
+function nextQuestion(){currentIndex++;currentIndex>=order.length?endGame():renderQuestion();}
 function endGame(){
-  clearInterval(timerId);
-  const elapsed=Date.now()-startTime;
-  const accuracy=attempts?Math.round((score/attempts)*100):0;
-  $("gamePanel").classList.add("hidden");
-  $("summaryPanel").classList.remove("hidden");
+  clearInterval(timerId); const elapsed=Date.now()-startTime;
+  const firstTry=questionResults.filter(r=>r.firstTryCorrect).length;
+  const firstPct=Math.round(firstTry/order.length*100);
+  $("gamePanel").classList.add("hidden"); $("summaryPanel").classList.remove("hidden");
   $("finalScore").textContent=`${score}/${order.length}`;
-  $("finalAccuracy").textContent=`${accuracy}%`;
-  $("finalAttempts").textContent=attempts;
-  $("finalTime").textContent=formatTime(elapsed);
-
-  $("missedList").innerHTML=missed.length
-    ? missed.map(m=>`<div class="missed-item"><strong>${m.domain}</strong><br>${m.question}<br><strong>Correct call:</strong> ${m.correct}<br><em>${m.explanation}</em></div>`).join("")
-    : `<div class="missed-item"><strong>Clean install.</strong><br>No missed reps recorded.</div>`;
-
-  logResult({
-    game:"Install 5 - IEP Game Day",
-    player,
-    score,
-    total:order.length,
-    attempts,
-    accuracy,
-    elapsedSeconds:Math.round(elapsed/1000),
-    missedCount:missed.length,
-    missedItems:missed,
-    timestamp:new Date().toISOString()
-  });
-}
-
-function logResult(payload){
-  if(!SCRIPT_URL || SCRIPT_URL.includes("PASTE_YOUR")){
-    console.warn("Apps Script URL not set.",payload);
-    return;
+  $("finalAccuracy").textContent=`${firstPct}% first try`;
+  $("finalAttempts").textContent=attempts; $("finalTime").textContent=$("timeOut").textContent;
+  const list=$("missedList"); list.innerHTML="";
+  if(!missed.length) list.innerHTML="<p>No missed reps. Clean run.</p>";
+  else{
+    const seen=new Set();
+    missed.forEach(m=>{if(seen.has(m.question))return;seen.add(m.question);const d=document.createElement("div");d.className="missed-item";d.innerHTML=`<strong>${m.domain}</strong><br>${m.question}<br><small>Correct: ${m.correct}</small>`;list.appendChild(d);});
   }
-  fetch(SCRIPT_URL,{
-    method:"POST",
-    mode:"no-cors",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(payload)
-  }).catch(err=>console.warn("Logging failed",err));
+  sendResults(elapsed,firstTry,firstPct);
 }
-
-function resetGame(){
-  clearInterval(timerId);
-  $("gamePanel").classList.add("hidden");
-  $("summaryPanel").classList.add("hidden");
-  $("nameScreen").classList.remove("hidden");
-  $("studentName").focus();
+function sendResults(elapsed,firstTry,firstPct){
+  if(!SCRIPT_URL)return;
+  const payload={player,game:"Game 5 - IEP Game Day",score:firstTry,total:order.length,masteryScore:score,attempts,accuracy:firstPct,elapsedSeconds:Math.round(elapsed/1000),missedCount:missed.length,missedItems:missed,questionResults,timestamp:new Date().toISOString()};
+  try{fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});}catch(e){}
 }
-
+function resetRun(){
+  clearInterval(timerId); locked=true; currentIndex=0;score=0;attempts=0;missed=[];questionResults=[];currentWrong=[];currentAttempts=0;
+  $("gamePanel").classList.add("hidden");$("summaryPanel").classList.add("hidden");$("nameScreen").classList.remove("hidden");
+  $("scoreOut").textContent="0";$("attemptsOut").textContent="0";$("timeOut").textContent="0:00";$("studentName").focus();
+}
 $("startBtn").addEventListener("click",startGame);
 $("studentName").addEventListener("keydown",e=>{if(e.key==="Enter")startGame();});
-$("resetBtn").addEventListener("click",resetGame);
-$("playAgainBtn").addEventListener("click",startGame);
+$("resetBtn").addEventListener("click",()=>{if(confirm("Reset this run? Current unsent progress will be cleared."))resetRun();});
+$("playAgainBtn").addEventListener("click",resetRun);
 </script>
 </body>
 </html>
